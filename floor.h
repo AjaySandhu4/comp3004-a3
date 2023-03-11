@@ -11,6 +11,11 @@ public:
         return (os << "Floor number: " << f.level << "\n Top: " << f.top << std::endl);
     }
 
+    int getLevel() const;
+    bool isTop() const;
+    bool isWaitingUp() const;
+    bool isWaitingDown() const;
+
 private:
     int level; //Number of the floor
     bool top; //Is this the top floor

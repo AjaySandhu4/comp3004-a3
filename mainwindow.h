@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QVector>
 #include <QDebug>
+#include <QString>
 #include <iostream>
 
 #include "ecs.h"
@@ -37,6 +38,7 @@ private:
     void populateElevators(int numCars);
     void clearFloors();
     void clearElevators();
+    void initFloorButtons(int floorNum);
 
 private slots:
     void initSimulation();

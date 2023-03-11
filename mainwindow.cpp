@@ -73,6 +73,12 @@ void MainWindow::resetSimulation()
 void MainWindow::initFloorFrame()
 {
 
+    ui->floorNumComboBox->clear();
+    for(int i=1; i<=floors->length(); ++i)
+        ui->floorNumComboBox->addItem(QString::number(i));
+//    initFloorButtons(1); //Default floor is floor number 1
+
+    ui->floorFrame->setVisible(true);
 }
 
 void MainWindow::initElevatorFrame()
