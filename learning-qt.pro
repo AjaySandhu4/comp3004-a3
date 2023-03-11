@@ -16,10 +16,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ecs.cpp \
+    elevator.cpp \
+    floor.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
+    ecs.h \
+    elevator.h \
+    floor.h \
     mainwindow.h
 
 FORMS += \

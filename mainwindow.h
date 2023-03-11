@@ -2,6 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVector>
+#include <QDebug>
+#include <iostream>
+
+#include "ecs.h"
+#include "elevator.h"
+#include "floor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,5 +24,22 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    ECS *ecs;
+    QVector<Floor*> *floors;
+    QVector<Elevator*> *elevators;
+
+
+
+    void initFloorFrame();
+    void initElevatorFrame();
+    void populateFloors(int numFloors);
+    void populateElevators(int numCars);
+    void clearFloors();
+    void clearElevators();
+
+private slots:
+    void initSimulation();
+    void resetSimulation();
 };
 #endif // MAINWINDOW_H
