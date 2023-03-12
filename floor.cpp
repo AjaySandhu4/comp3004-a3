@@ -21,10 +21,11 @@ bool Floor::isWaitingDown() const { return waitingDown; }
 void Floor::inform(char direction) {
     if(direction == UP){
         waitingUp = true;
-        std::cout << "Floor " << level << " being informed in direction UP" << std::endl;
+        QTextStream(stdout) << "Floor " << level << " being informed in direction UP" << endl;
+//        std::cout << "Floor " << level << " being informed in direction UP" << std::endl;
     } else if(direction == DOWN){
         waitingDown = true;
-        std::cout << "Floor " << level << " being informed in direction DOWN" << std::endl;
+        QTextStream(stdout) << "Floor " << level << " being informed in direction DOWN" << endl;
     } else {
         std::cerr << "Can only inform floor of UP or DOWN" << std::endl;
     }

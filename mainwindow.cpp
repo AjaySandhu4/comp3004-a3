@@ -7,8 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , elevators(new QVector<Elevator*>)
     , floors(new QVector<Floor*>)
     , ecs(NULL)
-    , floorOnUi(0)
-    , elevatorOnUi(0)
+    , floorOnUi(NULL)
+    , elevatorOnUi(NULL)
 {
     ui->setupUi(this);
 
@@ -46,7 +46,19 @@ void MainWindow::initFloorFrame()
 
 void MainWindow::initElevatorFrame()
 {
+    //Initialize combobox with car numbers
+    ui->carNumComboBox->clear();
+    for(int i=0; i<elevators->length(); ++i)
+        ui->carNumComboBox->addItem(QString::number(i));
 
+    //Initalize combobox with floor numbers (to make requests)
+    ui->floorRequestComboBox->clear();
+    for(int i=0; i<floors->length(); ++i)
+        ui->floorRequestComboBox->addItem(QString::number(i));
+    ui->floorRequestComboBox->setCurrentIndex(-1);
+
+    setupElevatorInterface();
+    ui->elevatorFrame->setVisible(true);
 }
 
 void MainWindow::populateFloors(int numFloors) {
@@ -65,7 +77,7 @@ void MainWindow::populateFloors(int numFloors) {
 void MainWindow::populateElevators(int numCars) {
     std::cout << "We are populating " << numCars << " elevators" << std::endl;
     for (int i=0; i<numCars; ++i) {
-        elevators->push_back(new Elevator(i));
+        elevators->push_back(new Elevator(i, floors->length()));
     }
     for (int i=0; i<numCars; ++i) {
         std::cout << *(*elevators)[i] << std::endl;
@@ -86,15 +98,12 @@ void MainWindow::clearElevators() {
 }
 
 void MainWindow::setupFloorButtons() {
-    Floor* currFloorOnUi = floors->value(floorOnUi);
-    bool isTop = currFloorOnUi->isTop();
-    bool isGround = currFloorOnUi->getLevel() == Floor::GROUND_LEVEL;
-    if(!isTop) {
+    if(!floorOnUi->isTop()) {
         ui->floorUpButton->setVisible(true);
     } else {
         ui->floorUpButton->setVisible(false);
     }
-    if(!isGround) {
+    if(!floorOnUi->getLevel() == Floor::GROUND_LEVEL) {
         ui->floorDownButton->setVisible(true);
     } else {
         ui->floorDownButton->setVisible(false);
@@ -111,8 +120,8 @@ void MainWindow::on_startSimulationButton_clicked()
     populateElevators(ui->numElevatorsSpinBox->value());
 
     //Default floor and elevator shown on the UI are floor number 0 and elevator number 0
-    floorOnUi = 0;
-    elevatorOnUi = 0;
+    floorOnUi = floors->value(0);
+    elevatorOnUi = elevators->value(0);
 
     initFloorFrame();
     initElevatorFrame();
@@ -136,18 +145,40 @@ void MainWindow::on_resetSimulationButton_clicked()
     ui->initFrame->setVisible(true);
 }
 
-void MainWindow::on_floorNumComboBox_activated(int index)
+void MainWindow::on_floorNumComboBox_activated(int floorNum)
 {
-    floorOnUi = index;
-    setupFloorButtons();
+    if(floorNum != floorOnUi->getLevel()){
+        floorOnUi = floors->value(floorNum);
+        setupFloorButtons();
+    }
 }
 
 void MainWindow::on_floorUpButton_clicked()
 {
-    floors->value(floorOnUi)->inform(Floor::UP);
+    floorOnUi->inform(Floor::UP);
 }
 
 void MainWindow::on_floorDownButton_clicked()
 {
-    floors->value(floorOnUi)->inform(Floor::DOWN);
+    floorOnUi->inform(Floor::DOWN);
+}
+
+void MainWindow::on_carNumComboBox_activated(int carNum)
+{
+    elevatorOnUi = elevators->value(carNum);
+    setupElevatorInterface();
+}
+
+void MainWindow::setupElevatorInterface()
+{
+    //Populate combobox with the
+
+}
+
+void MainWindow::on_floorRequestComboBox_activated(int floorNum)
+{
+    if(!elevatorOnUi->isFloorRequest(floorNum)){ //If not already a floor request...
+        elevatorOnUi->destFloorRequest(floorNum);
+    }
+    ui->floorRequestComboBox->setCurrentIndex(-1);
 }

@@ -2,6 +2,8 @@
 #define FLOOR_H
 
 #include <QObject>
+#include <QDebug>
+#include <QTextStream>
 #include <iostream>
 
 class Floor : public QObject

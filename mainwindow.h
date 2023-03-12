@@ -30,8 +30,8 @@ private:
     QVector<Floor*> *floors;
     QVector<Elevator*> *elevators;
 
-    int floorOnUi;
-    int elevatorOnUi;
+    Floor* floorOnUi;
+    Elevator* elevatorOnUi;
 
     void initFloorFrame();
     void initElevatorFrame();
@@ -40,12 +40,15 @@ private:
     void clearFloors();
     void clearElevators();
     void setupFloorButtons();
+    void setupElevatorInterface();
 
 private slots:
     void on_startSimulationButton_clicked();
     void on_resetSimulationButton_clicked();
-    void on_floorNumComboBox_activated(int index);
+    void on_floorNumComboBox_activated(int floorNum);
     void on_floorUpButton_clicked();
     void on_floorDownButton_clicked();
+    void on_carNumComboBox_activated(int carNum);
+    void on_floorRequestComboBox_activated(int floorNum);
 };
 #endif // MAINWINDOW_H
