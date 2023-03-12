@@ -17,6 +17,15 @@ bool Floor::isWaitingUp() const { return waitingUp; }
 bool Floor::isWaitingDown() const { return waitingDown; }
 
 void Floor::inform(char direction) {
-    std::cout << "Floor being informed in direction " << direction << std::endl;
+    if(direction == UP){
+        waitingUp = true;
+        std::cout << "Floor " << level << " being informed in direction UP" << std::endl;
+    } else if(direction == DOWN){
+        waitingDown = true;
+        std::cout << "Floor " << level << " being informed in direction DOWN" << std::endl;
+    } else {
+        std::cerr << "Can only inform floor of UP or DOWN" << std::endl;
+    }
+
 }
 

@@ -30,7 +30,8 @@ private:
     QVector<Floor*> *floors;
     QVector<Elevator*> *elevators;
 
-
+    int floorOnUi;
+    int elevatorOnUi;
 
     void initFloorFrame();
     void initElevatorFrame();
@@ -38,11 +39,13 @@ private:
     void populateElevators(int numCars);
     void clearFloors();
     void clearElevators();
-    void initFloorButtons(int floorNum);
-    void FloorUpButtonPressed();
+    void initFloorButtons();
 
 private slots:
-    void initSimulation();
-    void resetSimulation();
+    void on_startSimulationButton_clicked();
+    void on_resetSimulationButton_clicked();
+    void on_floorNumComboBox_activated(int index);
+    void on_floorUpButton_clicked();
+    void on_floorDownButton_clicked();
 };
 #endif // MAINWINDOW_H

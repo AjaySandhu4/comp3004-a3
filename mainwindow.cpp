@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , elevators(new QVector<Elevator*>)
     , floors(new QVector<Floor*>)
     , ecs(NULL)
+    , floorOnUi(1)
+    , elevatorOnUi(1)
 {
     ui->setupUi(this);
 
@@ -15,18 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->floorFrame->setVisible(false);
     ui->simControlFrame->setVisible(false);
 
-    //Connect start and reset simulation buttons
-    connect(ui->startSimulationButton, &QPushButton::released, this, &MainWindow::initSimulation);
-    connect(ui->resetSimulationButton, &QPushButton::released, this, &MainWindow::resetSimulation);
-
 }
 
 MainWindow::~MainWindow()
 {
     std::cout << "Main window destructor called" << std::endl;
-    if(ecs != NULL){
-        delete ecs;
-    }
+//    if(ecs != NULL){
+//        delete ecs;
+//    }
 
     clearElevators();
     delete elevators;
@@ -37,47 +35,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::initSimulation()
-{
-    //Hide the simulation initialization menu
-    ui->initFrame->setVisible(false);
-
-    //Initialize the frames for the simulation
-//    ui->elevatorFrame->setVisible(true);
-//    ui->floorFrame->setVisible(true);
-    populateFloors(ui->numFloorsSpinBox->value());
-    populateElevators(ui->numElevatorsSpinBox->value());
-
-    initFloorFrame();
-    initElevatorFrame();
-    ui->simControlFrame->setVisible(true);
-}
-
-void MainWindow::resetSimulation()
-{
-    delete ecs;
-    ecs = NULL;
-
-    clearFloors();
-    clearElevators();
-
-    //Hide simulation frames
-    ui->elevatorFrame->setVisible(false);
-    ui->floorFrame->setVisible(false);
-    ui->simControlFrame->setVisible(false);
-
-    //Show the simulation initialization menu again
-    ui->initFrame->setVisible(true);
-}
-
 void MainWindow::initFloorFrame()
 {
-
     ui->floorNumComboBox->clear();
     for(int i=1; i<=floors->length(); ++i)
         ui->floorNumComboBox->addItem(QString::number(i));
-    initFloorButtons(1); //Default floor is floor number 1
-
+    initFloorButtons();
     ui->floorFrame->setVisible(true);
 }
 
@@ -122,21 +85,69 @@ void MainWindow::clearElevators() {
     elevators->clear();
 }
 
-void MainWindow::initFloorButtons(int floorNum) {
-    Floor* currFloorOnUi = floors->value(floorNum-1);
+void MainWindow::initFloorButtons() {
+    Floor* currFloorOnUi = floors->value(floorOnUi-1);
     bool isTop = currFloorOnUi->isTop();
     bool isGround = currFloorOnUi->getLevel() == 1;
     if(!isTop) {
-        connect(ui->floorUpButton, &QPushButton::released, currFloorOnUi, &Floor::inform(Floor::UP));
-//        connect(ui->floorUpButton, &QPushButton::released, this, &MainWindow::FloorUpButtonPressed);
         ui->floorUpButton->setVisible(true);
     } else {
         ui->floorUpButton->setVisible(false);
     }
     if(!isGround) {
-//        connect(ui->floorDownButton, &QPushButton::released, currFloorOnUi, &Floor::inform(Floor::Direction::DOWN));
         ui->floorDownButton->setVisible(true);
     } else {
         ui->floorDownButton->setVisible(false);
     }
+}
+
+void MainWindow::on_startSimulationButton_clicked()
+{
+    //Hide the simulation initialization menu
+    ui->initFrame->setVisible(false);
+
+    //Initialize the frames for the simulation
+    populateFloors(ui->numFloorsSpinBox->value());
+    populateElevators(ui->numElevatorsSpinBox->value());
+
+    //Default floor and elevator shown on the UI are floor number 1 and elevator number 1
+    floorOnUi = 1;
+    elevatorOnUi = 1;
+
+    initFloorFrame();
+    initElevatorFrame();
+    ui->simControlFrame->setVisible(true);
+}
+
+void MainWindow::on_resetSimulationButton_clicked()
+{
+//    delete ecs;
+//    ecs = NULL;
+
+    clearFloors();
+    clearElevators();
+
+    //Hide simulation frames
+    ui->elevatorFrame->setVisible(false);
+    ui->floorFrame->setVisible(false);
+    ui->simControlFrame->setVisible(false);
+
+    //Show the simulation initialization menu again
+    ui->initFrame->setVisible(true);
+}
+
+void MainWindow::on_floorNumComboBox_activated(int index)
+{
+    floorOnUi = index+1;
+    initFloorButtons();
+}
+
+void MainWindow::on_floorUpButton_clicked()
+{
+    floors->value(floorOnUi-1)->inform(Floor::UP);
+}
+
+void MainWindow::on_floorDownButton_clicked()
+{
+    floors->value(floorOnUi-1)->inform(Floor::DOWN);
 }
