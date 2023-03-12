@@ -7,8 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
     , elevators(new QVector<Elevator*>)
     , floors(new QVector<Floor*>)
     , ecs(NULL)
-    , floorOnUi(1)
-    , elevatorOnUi(1)
+    , floorOnUi(0)
+    , elevatorOnUi(0)
 {
     ui->setupUi(this);
 
@@ -38,7 +38,7 @@ MainWindow::~MainWindow()
 void MainWindow::initFloorFrame()
 {
     ui->floorNumComboBox->clear();
-    for(int i=1; i<=floors->length(); ++i)
+    for(int i=0; i<floors->length(); ++i)
         ui->floorNumComboBox->addItem(QString::number(i));
     initFloorButtons();
     ui->floorFrame->setVisible(true);
@@ -51,10 +51,10 @@ void MainWindow::initElevatorFrame()
 
 void MainWindow::populateFloors(int numFloors) {
     std::cout << "We are populating " << numFloors << " floors" << std::endl;
-    for (int i=1; i<numFloors; ++i) {
+    for (int i=0; i<numFloors-1; ++i) {
         floors->push_back(new Floor(i, false));
     }
-    floors->push_back(new Floor(numFloors, true)); // Last floor is the 'top' floor
+    floors->push_back(new Floor(numFloors-1, true)); // Last floor is the 'top' floor
     for (int i=0; i<numFloors; ++i) {
         std::cout << *(*floors)[i] << std::endl;
     }
@@ -64,7 +64,7 @@ void MainWindow::populateFloors(int numFloors) {
 
 void MainWindow::populateElevators(int numCars) {
     std::cout << "We are populating " << numCars << " elevators" << std::endl;
-    for (int i=1; i<=numCars; ++i) {
+    for (int i=0; i<numCars; ++i) {
         elevators->push_back(new Elevator(i));
     }
     for (int i=0; i<numCars; ++i) {
@@ -74,21 +74,21 @@ void MainWindow::populateElevators(int numCars) {
 }
 
 void MainWindow::clearFloors() {
-    for (int i=1; i<=floors->length(); ++i)
+    for (int i=0; i<floors->length(); ++i)
         delete floors->value(i);
     floors->clear();
 }
 
 void MainWindow::clearElevators() {
-    for (int i=1; i<=elevators->length(); ++i)
+    for (int i=0; i<elevators->length(); ++i)
         delete elevators->value(i);
     elevators->clear();
 }
 
 void MainWindow::initFloorButtons() {
-    Floor* currFloorOnUi = floors->value(floorOnUi-1);
+    Floor* currFloorOnUi = floors->value(floorOnUi);
     bool isTop = currFloorOnUi->isTop();
-    bool isGround = currFloorOnUi->getLevel() == 1;
+    bool isGround = currFloorOnUi->getLevel() == Floor::GROUND_LEVEL;
     if(!isTop) {
         ui->floorUpButton->setVisible(true);
     } else {
@@ -110,9 +110,9 @@ void MainWindow::on_startSimulationButton_clicked()
     populateFloors(ui->numFloorsSpinBox->value());
     populateElevators(ui->numElevatorsSpinBox->value());
 
-    //Default floor and elevator shown on the UI are floor number 1 and elevator number 1
-    floorOnUi = 1;
-    elevatorOnUi = 1;
+    //Default floor and elevator shown on the UI are floor number 0 and elevator number 0
+    floorOnUi = 0;
+    elevatorOnUi = 0;
 
     initFloorFrame();
     initElevatorFrame();
@@ -138,16 +138,16 @@ void MainWindow::on_resetSimulationButton_clicked()
 
 void MainWindow::on_floorNumComboBox_activated(int index)
 {
-    floorOnUi = index+1;
+    floorOnUi = index;
     initFloorButtons();
 }
 
 void MainWindow::on_floorUpButton_clicked()
 {
-    floors->value(floorOnUi-1)->inform(Floor::UP);
+    floors->value(floorOnUi)->inform(Floor::UP);
 }
 
 void MainWindow::on_floorDownButton_clicked()
 {
-    floors->value(floorOnUi-1)->inform(Floor::DOWN);
+    floors->value(floorOnUi)->inform(Floor::DOWN);
 }

@@ -21,6 +21,8 @@ public:
     const static char UP;
     const static char DOWN;
 
+    const static char GROUND_LEVEL;
+
 public slots:
     void inform(char direction);
 

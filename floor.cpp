@@ -3,6 +3,8 @@
 const char Floor::UP = 1;
 const char Floor::DOWN = 0;
 
+const char Floor::GROUND_LEVEL = 0;
+
 
 Floor::Floor(int level, bool top)
     : level(level)
