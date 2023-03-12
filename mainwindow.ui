@@ -52,7 +52,7 @@
       <string>Floor Number</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="floorUpButton">
      <property name="geometry">
       <rect>
        <x>30</x>
@@ -65,7 +65,7 @@
       <string>Up</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_5">
+    <widget class="QPushButton" name="floorDownButton">
      <property name="geometry">
       <rect>
        <x>30</x>

@@ -76,7 +76,7 @@ void MainWindow::initFloorFrame()
     ui->floorNumComboBox->clear();
     for(int i=1; i<=floors->length(); ++i)
         ui->floorNumComboBox->addItem(QString::number(i));
-//    initFloorButtons(1); //Default floor is floor number 1
+    initFloorButtons(1); //Default floor is floor number 1
 
     ui->floorFrame->setVisible(true);
 }
@@ -120,4 +120,23 @@ void MainWindow::clearElevators() {
     for (int i=1; i<=elevators->length(); ++i)
         delete elevators->value(i);
     elevators->clear();
+}
+
+void MainWindow::initFloorButtons(int floorNum) {
+    Floor* currFloorOnUi = floors->value(floorNum-1);
+    bool isTop = currFloorOnUi->isTop();
+    bool isGround = currFloorOnUi->getLevel() == 1;
+    if(!isTop) {
+        connect(ui->floorUpButton, &QPushButton::released, currFloorOnUi, &Floor::inform(Floor::UP));
+//        connect(ui->floorUpButton, &QPushButton::released, this, &MainWindow::FloorUpButtonPressed);
+        ui->floorUpButton->setVisible(true);
+    } else {
+        ui->floorUpButton->setVisible(false);
+    }
+    if(!isGround) {
+//        connect(ui->floorDownButton, &QPushButton::released, currFloorOnUi, &Floor::inform(Floor::Direction::DOWN));
+        ui->floorDownButton->setVisible(true);
+    } else {
+        ui->floorDownButton->setVisible(false);
+    }
 }

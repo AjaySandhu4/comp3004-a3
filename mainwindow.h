@@ -39,6 +39,7 @@ private:
     void clearFloors();
     void clearElevators();
     void initFloorButtons(int floorNum);
+    void FloorUpButtonPressed();
 
 private slots:
     void initSimulation();

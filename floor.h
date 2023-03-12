@@ -1,10 +1,12 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
+#include <QObject>
 #include <iostream>
 
-class Floor
+class Floor : public QObject
 {
+    Q_OBJECT
 public:
     Floor(int level, bool top);
     friend std::ostream& operator<< (std::ostream &os, const Floor &f) {
@@ -15,6 +17,12 @@ public:
     bool isTop() const;
     bool isWaitingUp() const;
     bool isWaitingDown() const;
+
+    const static char UP;
+    const static char DOWN;
+
+public slots:
+    void inform(char direction);
 
 private:
     int level; //Number of the floor
