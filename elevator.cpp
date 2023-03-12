@@ -2,5 +2,5 @@
 
 Elevator::Elevator(int carNum)
     : carNum(carNum)
-    , currentFloor(1)
+    , currentFloor(0)
 { }

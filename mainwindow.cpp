@@ -40,7 +40,7 @@ void MainWindow::initFloorFrame()
     ui->floorNumComboBox->clear();
     for(int i=0; i<floors->length(); ++i)
         ui->floorNumComboBox->addItem(QString::number(i));
-    initFloorButtons();
+    setupFloorButtons();
     ui->floorFrame->setVisible(true);
 }
 
@@ -85,7 +85,7 @@ void MainWindow::clearElevators() {
     elevators->clear();
 }
 
-void MainWindow::initFloorButtons() {
+void MainWindow::setupFloorButtons() {
     Floor* currFloorOnUi = floors->value(floorOnUi);
     bool isTop = currFloorOnUi->isTop();
     bool isGround = currFloorOnUi->getLevel() == Floor::GROUND_LEVEL;
@@ -139,7 +139,7 @@ void MainWindow::on_resetSimulationButton_clicked()
 void MainWindow::on_floorNumComboBox_activated(int index)
 {
     floorOnUi = index;
-    initFloorButtons();
+    setupFloorButtons();
 }
 
 void MainWindow::on_floorUpButton_clicked()

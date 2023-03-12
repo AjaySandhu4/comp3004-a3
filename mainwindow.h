@@ -39,7 +39,7 @@ private:
     void populateElevators(int numCars);
     void clearFloors();
     void clearElevators();
-    void initFloorButtons();
+    void setupFloorButtons();
 
 private slots:
     void on_startSimulationButton_clicked();
