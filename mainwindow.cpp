@@ -155,12 +155,12 @@ void MainWindow::on_floorNumComboBox_activated(int floorNum)
 
 void MainWindow::on_floorUpButton_clicked()
 {
-    floorOnUi->inform(Floor::UP);
+    floorOnUi->inform(Direction::UP);
 }
 
 void MainWindow::on_floorDownButton_clicked()
 {
-    floorOnUi->inform(Floor::DOWN);
+    floorOnUi->inform(Direction::DOWN);
 }
 
 void MainWindow::on_carNumComboBox_activated(int carNum)
@@ -171,13 +171,12 @@ void MainWindow::on_carNumComboBox_activated(int carNum)
 
 void MainWindow::setupElevatorInterface()
 {
-    //Populate combobox with the
 
 }
 
 void MainWindow::on_floorRequestComboBox_activated(int floorNum)
 {
-    if(!elevatorOnUi->isFloorRequest(floorNum)){ //If not already a floor request...
+    if(!elevatorOnUi->isRequestedFloor(floorNum)){ //If not already a floor request...
         elevatorOnUi->destFloorRequest(floorNum);
     }
     ui->floorRequestComboBox->setCurrentIndex(-1);

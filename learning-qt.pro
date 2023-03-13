@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     ecs.cpp \
     elevator.cpp \
+    elevatorfloorsensor.cpp \
     floor.cpp \
     main.cpp \
     mainwindow.cpp
@@ -25,6 +26,7 @@ SOURCES += \
 HEADERS += \
     ecs.h \
     elevator.h \
+    elevatorfloorsensor.h \
     floor.h \
     mainwindow.h
 

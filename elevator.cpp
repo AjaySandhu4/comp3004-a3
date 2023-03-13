@@ -3,7 +3,9 @@
 Elevator::Elevator(int carNum, int numFloors)
     : carNum(carNum)
     , currFloor(0)
-    , floorRequests(new bool[numFloors]{false})
+    , floorRequests(new bool[numFloors]{0})
+    , doorsOpen(true)
+    , state(ElevatorState::IDLE)
 { }
 
 Elevator::~Elevator()
@@ -11,7 +13,7 @@ Elevator::~Elevator()
     delete floorRequests;
 }
 
-bool Elevator::isFloorRequest(int floorNum) const { return floorRequests[floorNum]; }
+bool Elevator::isRequestedFloor(int floorNum) const { return floorRequests[floorNum]; }
 
 void Elevator::destFloorRequest(int floorNum)
 {

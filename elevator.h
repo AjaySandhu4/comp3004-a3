@@ -3,7 +3,17 @@
 
 #include <QObject>
 #include <QVector>
+#include <QTimer>
 #include <iostream>
+
+enum ElevatorState {
+    MOVINGUP,
+    MOVINGDOWN,
+    WAITING,
+    BLOCKED,
+    OUTOFSERVICE,
+    IDLE
+};
 
 class Elevator : public QObject
 {
@@ -16,16 +26,21 @@ public:
         return (os << "Car number: " << e.carNum << "\nCurrent floor: " << e.currFloor << std::endl);
     }
 
-    bool isFloorRequest(int floorNum) const;
+    bool isRequestedFloor(int floorNum) const;
 
 public slots:
     void destFloorRequest(int floorNum);
     void newFloor(int floorNum);
 
+signals:
+    void moving(int startingFloor, ElevatorState state);
+
 private:
     int carNum;
     int currFloor;
     bool *floorRequests;
+    bool doorsOpen;
+    ElevatorState state;
 
 //signals:
 

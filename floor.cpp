@@ -1,10 +1,6 @@
 #include "floor.h"
 
-const char Floor::UP = 1;
-const char Floor::DOWN = 0;
-
 const char Floor::GROUND_LEVEL = 0;
-
 
 Floor::Floor(int level, bool top)
     : level(level)
@@ -18,12 +14,12 @@ bool Floor::isTop() const { return top; }
 bool Floor::isWaitingUp() const { return waitingUp; }
 bool Floor::isWaitingDown() const { return waitingDown; }
 
-void Floor::inform(char direction) {
-    if(direction == UP){
+void Floor::inform(Direction direction) {
+    if(direction == Direction::UP){
         waitingUp = true;
         QTextStream(stdout) << "Floor " << level << " being informed in direction UP" << endl;
 //        std::cout << "Floor " << level << " being informed in direction UP" << std::endl;
-    } else if(direction == DOWN){
+    } else if(direction == Direction::DOWN){
         waitingDown = true;
         QTextStream(stdout) << "Floor " << level << " being informed in direction DOWN" << endl;
     } else {

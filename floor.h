@@ -6,6 +6,8 @@
 #include <QTextStream>
 #include <iostream>
 
+enum Direction { DOWN, UP };
+
 class Floor : public QObject
 {
     Q_OBJECT
@@ -20,13 +22,10 @@ public:
     bool isWaitingUp() const;
     bool isWaitingDown() const;
 
-    const static char UP;
-    const static char DOWN;
-
     const static char GROUND_LEVEL;
 
 public slots:
-    void inform(char direction);
+    void inform(Direction direction);
 
 private:
     int level; //Number of the floor
