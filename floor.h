@@ -31,7 +31,7 @@ public slots:
 
 signals:
     void requestForElevator(int floorNum, Direction direction);
-    void floorServiced(Direction direction);
+    void floorServiced();
 
 private:
     const int level; //Number of the floor

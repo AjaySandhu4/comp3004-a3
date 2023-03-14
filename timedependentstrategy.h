@@ -7,8 +7,8 @@ class TimeDependentStrategy : public AllocationStrategy
 {
     Q_OBJECT
 public slots:
-    void processFloorRequest(int floorNum, Direction direction, Elevator** cars);
-    void rerouteElevatorRequests(Elevator* elevator, Elevator** cars, Floor** floors);
+    void allocateElevator(int floorNum, Direction direction, QVector<Elevator*> *cars);
+    void rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors); //TODO: probably bad
 };
 
 #endif // TIMEDEPENDENTSTRATEGY_H

@@ -43,7 +43,6 @@ private:
     void populateElevators(int numCars);
     void clearFloors();
     void clearElevators();
-    void setupFloorButtons();
     void setupElevatorInterface();
     void disconnectElevatorFromUi();
     void initECS();
@@ -56,5 +55,6 @@ private slots:
     void on_floorDownButton_clicked();
     void on_carNumComboBox_activated(int carNum);
     void on_floorRequestComboBox_activated(int floorNum);
+    void setupFloorButtons();
 };
 #endif // MAINWINDOW_H

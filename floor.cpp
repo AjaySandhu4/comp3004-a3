@@ -28,8 +28,10 @@ void Floor::inform(Direction direction) {
 }
 
 void Floor::serviced(Direction direction) {
+//    QString d = direction == Direction::UP ? "UP" : "DOWN";
+    QTextStream(stdout) << "Floor " << level << " being serviced in direction " << direction << "!" << endl;
     if(direction == Direction::UP) waitingUp = false;
     if(direction == Direction::DOWN) waitingDown = false;
-    emit floorServiced(direction);
+    emit floorServiced();
 }
 

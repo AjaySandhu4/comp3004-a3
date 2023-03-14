@@ -23,9 +23,13 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     std::cout << "Main window destructor called" << std::endl;
-//    if(ecs != nullptr){
-//        delete ecs;
-//    }
+    if(ecs != nullptr){
+        delete ecs;
+    }
+
+    if(currAllocationStrategy != nullptr){
+        delete currAllocationStrategy;
+    }
 
     clearElevators();
     delete elevators;
@@ -88,26 +92,17 @@ void MainWindow::clearElevators() {
 }
 
 void MainWindow::setupFloorButtons() {
-    if(!floorOnUi->isTop()) {
-        ui->floorUpButton->setVisible(true);
-        if(floorOnUi->isWaitingUp()){
-            ui->floorUpButton->setStyleSheet("background-color: yellow");
-        } else{
-            ui->floorUpButton->setStyleSheet("");
-        }
-    } else {
-        ui->floorUpButton->setVisible(false);
-        if(floorOnUi->isWaitingDown()){
-            ui->floorDownButton->setStyleSheet("background-color: yellow");
-        } else{
-            ui->floorDownButton->setStyleSheet("");
-        }
-    }
-    if(floorOnUi->getLevel() != Floor::GROUND_LEVEL) {
-        ui->floorDownButton->setVisible(true);
-    } else {
-        ui->floorDownButton->setVisible(false);
-    }
+    if(floorOnUi->isTop()) ui->floorUpButton->setVisible(false);
+    else ui->floorUpButton->setVisible(true);
+
+    if(floorOnUi->getLevel() == Floor::GROUND_LEVEL) ui->floorDownButton->setVisible(false);
+    else ui->floorDownButton->setVisible(true);
+
+    if(floorOnUi->isWaitingUp()) ui->floorUpButton->setStyleSheet("background-color: yellow");
+    else ui->floorUpButton->setStyleSheet("");
+
+    if(floorOnUi->isWaitingDown()) ui->floorDownButton->setStyleSheet("background-color: yellow");
+    else ui->floorDownButton->setStyleSheet("");
 }
 
 void MainWindow::on_startSimulationButton_clicked()
@@ -133,8 +128,10 @@ void MainWindow::on_startSimulationButton_clicked()
 void MainWindow::on_resetSimulationButton_clicked()
 {
     delete ecs;
+    ecs = nullptr;
 
     delete currAllocationStrategy;
+    currAllocationStrategy = nullptr;
 
     clearFloors();
     clearElevators();
@@ -158,6 +155,8 @@ void MainWindow::on_floorNumComboBox_activated(int floorNum)
         //Switch floor on the UI to the newly selected floor
         floorOnUi = floors->value(floorNum);
 
+        connect(floorOnUi, &Floor::floorServiced, this, &MainWindow::setupFloorButtons);
+
         //Setup floor buttons to new floor
         setupFloorButtons();
     }
@@ -177,9 +176,11 @@ void MainWindow::on_floorDownButton_clicked()
 
 void MainWindow::on_carNumComboBox_activated(int carNum)
 {
-    disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
-    elevatorOnUi = elevators->value(carNum);
-    setupElevatorInterface();
+    if(carNum != elevatorOnUi->getCarNum()){
+        disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
+        elevatorOnUi = elevators->value(carNum);
+        setupElevatorInterface();
+    }
 }
 
 void MainWindow::setupElevatorInterface()

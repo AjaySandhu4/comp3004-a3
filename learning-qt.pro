@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     allocationstrategy.cpp \
+    direction.cpp \
     ecs.cpp \
     elevator.cpp \
     elevatorcenteredstrategy.cpp \

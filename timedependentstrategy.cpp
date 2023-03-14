@@ -1,11 +1,11 @@
 #include "timedependentstrategy.h"
 
-void TimeDependentStrategy::processFloorRequest(int floorNum, Direction direction, Elevator** cars)
+void TimeDependentStrategy::allocateElevator(int floorNum, Direction direction, QVector<Elevator*> *cars)
 {
 
 }
 
-void TimeDependentStrategy::rerouteElevatorRequests(Elevator* elevator, Elevator** cars, Floor** floors)
+void TimeDependentStrategy::rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors)
 {
 
 }

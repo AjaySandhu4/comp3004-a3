@@ -2,6 +2,8 @@
 
 const int Elevator::DOOR_TIMER_INTERVAL = 10000;
 const int Elevator::TIME_DOORS_TAKE_TO_SHUT = 2500;
+const char Elevator::REQUESTED_UP = 0b10;
+const char Elevator::REQUESTED_DOWN = 0b01;
 
 Elevator::Elevator(int carNum, int numFloors)
     : carNum(carNum)
@@ -10,6 +12,7 @@ Elevator::Elevator(int carNum, int numFloors)
     , floorRequests(new bool[numFloors]{0})
     , doorsOpen(true)
     , state(ElevatorState::IDLE)
+    , direction(Direction::UP)
 {
     connect(this, &Elevator::moving, &floorSensor, &ElevatorFloorSensor::detectMovement);
     connect(&floorSensor, &ElevatorFloorSensor::detectedFloor, this, &Elevator::newFloor);
@@ -22,13 +25,14 @@ Elevator::Elevator(int carNum, int numFloors)
 
 Elevator::~Elevator()
 {
-    delete floorRequests;
+    delete[] floorRequests;
 }
 
 bool Elevator::isRequestedFloor(int floorNum) const { return floorRequests[floorNum]; }
 int Elevator::getCurrFloor() const { return currFloor; }
+int Elevator::getCarNum() const { return carNum; }
 
-bool Elevator::isFloorRequestsEmpty() const {
+bool Elevator::areFloorRequestsEmpty() const {
     for(int i=0; i<numFloors; ++i){
         if(isRequestedFloor(i)) return false;
     }
@@ -38,9 +42,13 @@ bool Elevator::isFloorRequestsEmpty() const {
 void Elevator::destFloorRequest(int floorNum)
 {
     if(floorNum == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
-        emit floorServiced(currFloor);
+        emit floorServiced(currFloor, direction);
     } else {
         floorRequests[floorNum] = true; //Add the floor request
+        if(state == ElevatorState::IDLE){
+            state = ElevatorState::WAITING;
+            decideDirectionToGo(); //The first floor request determines the direction the car will travel
+        }
     }
     std::cout << "Car number " << carNum << " has received request for floor " << floorNum << std::endl;
 }
@@ -62,9 +70,14 @@ void Elevator::stop()
 {
     QTextStream(stdout) << "Elevator " << carNum << " is servicing floor " << currFloor << endl;
     doorsOpen = true;
-    state = ElevatorState::WAITING;
     floorRequests[currFloor] = 0; //Remove floor request for current floor
-    emit floorServiced(currFloor);
+    emit floorServiced(currFloor, direction);
+    if(areFloorRequestsEmpty()){
+        state = ElevatorState::IDLE;
+        emit nowIdle(carNum);
+    } else {
+        state = ElevatorState::WAITING;
+    }
     doorTimer.start(DOOR_TIMER_INTERVAL);
 }
 
@@ -75,34 +88,34 @@ void Elevator::closeDoors()
 
 void Elevator::move()
 {
-    direction = directionToGo();
     state = ElevatorState::MOVING;
     emit moving(currFloor, direction);
     QTextStream(stdout) << "Elevator " << carNum << " is on the move from floor " << currFloor << endl;
 }
 
 // Check if there are requests in same direction elevator was moving and otherwise return opposite direction
-Direction Elevator::directionToGo() const
+void Elevator::decideDirectionToGo()
 {
     if(direction == Direction::UP){
         for(int i=currFloor+1; i<numFloors; ++i){
-            if(isRequestedFloor(i)) return Direction::UP;
+            if(isRequestedFloor(i)) return;
         }
-        return Direction::DOWN;
+        direction = Direction::DOWN;
+        emit changedDirection(carNum);
     }
     else if(direction == Direction::DOWN){
         for(int i=currFloor-1; i>=0; --i){
-            if(isRequestedFloor(i)) return Direction::DOWN;
+            if(isRequestedFloor(i)) return;
         }
+        direction = Direction::UP;
+        emit changedDirection(carNum);
     }
-    return Direction::UP;
 }
 
 void Elevator::doorTimerFinished() {
     doorTimer.stop();
-    //If no more floor requests, set car to being idle and restart door timer...
-    if(isFloorRequestsEmpty()){
-        state = ElevatorState::IDLE;
+    //If still idle (no floor requests received), restart the timer...
+    if(state == ElevatorState::IDLE){
         doorTimer.start(DOOR_TIMER_INTERVAL);
     }
     else{

@@ -25,6 +25,7 @@ public:
 
     bool isRequestedFloor(int floorNum) const;
     int getCurrFloor() const;
+    int getCarNum() const;
 
 public slots:
     void destFloorRequest(int floorNum);
@@ -37,8 +38,11 @@ private slots:
 
 signals:
     void moving(int startingFloor, Direction direction);
-    void floorServiced(int floorNum);
+    void floorServiced(int floorNum, Direction direction);
     void reachedFloor(int floorNum);
+    void changedDirection(int carNum);
+    void nowIdle(int carNum);
+
 
 private:
     const int carNum;
@@ -54,11 +58,13 @@ private:
 
     const static int DOOR_TIMER_INTERVAL;
     const static int TIME_DOORS_TAKE_TO_SHUT;
+    const static char REQUESTED_UP;
+    const static char REQUESTED_DOWN;
 
     void stop();
     void closeDoors();
-    Direction directionToGo() const;
-    bool isFloorRequestsEmpty() const;
+    void decideDirectionToGo();
+    bool areFloorRequestsEmpty() const;
 
 //signals:
 
