@@ -21,14 +21,21 @@ public:
     bool isWaitingUp() const;
     bool isWaitingDown() const;
 
+    void serviced(Direction direction);
+
     const static char GROUND_LEVEL;
+
 
 public slots:
     void inform(Direction direction);
 
+signals:
+    void requestForElevator(int floorNum, Direction direction);
+    void floorServiced(Direction direction);
+
 private:
-    int level; //Number of the floor
-    bool top; //Is this the top floor
+    const int level; //Number of the floor
+    const bool top; //Is this the top floor
     bool waitingUp; // Is there a request from this floor in the "up" direction
     bool waitingDown; // Is there a request from this floor in the "down" direction
 };

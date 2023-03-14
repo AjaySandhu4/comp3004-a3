@@ -6,9 +6,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , elevators(new QVector<Elevator*>)
     , floors(new QVector<Floor*>)
-    , ecs(NULL)
-    , floorOnUi(NULL)
-    , elevatorOnUi(NULL)
+    , ecs(nullptr)
+    , floorOnUi(nullptr)
+    , elevatorOnUi(nullptr)
 {
     ui->setupUi(this);
 
@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     std::cout << "Main window destructor called" << std::endl;
-//    if(ecs != NULL){
+//    if(ecs != nullptr){
 //        delete ecs;
 //    }
 
@@ -100,8 +100,18 @@ void MainWindow::clearElevators() {
 void MainWindow::setupFloorButtons() {
     if(!floorOnUi->isTop()) {
         ui->floorUpButton->setVisible(true);
+        if(floorOnUi->isWaitingUp()){
+            ui->floorUpButton->setStyleSheet("background-color: yellow");
+        } else{
+            ui->floorUpButton->setStyleSheet("");
+        }
     } else {
         ui->floorUpButton->setVisible(false);
+        if(floorOnUi->isWaitingDown()){
+            ui->floorDownButton->setStyleSheet("background-color: yellow");
+        } else{
+            ui->floorDownButton->setStyleSheet("");
+        }
     }
     if(floorOnUi->getLevel() != Floor::GROUND_LEVEL) {
         ui->floorDownButton->setVisible(true);
@@ -131,7 +141,7 @@ void MainWindow::on_startSimulationButton_clicked()
 void MainWindow::on_resetSimulationButton_clicked()
 {
 //    delete ecs;
-//    ecs = NULL;
+//    ecs = nullptr;
 
     clearFloors();
     clearElevators();
@@ -148,18 +158,27 @@ void MainWindow::on_resetSimulationButton_clicked()
 void MainWindow::on_floorNumComboBox_activated(int floorNum)
 {
     if(floorNum != floorOnUi->getLevel()){
+        //Disconnect current floor on the UI from the UI floor buttons
+        disconnect(floorOnUi, nullptr, ui->floorUpButton, nullptr);
+        disconnect(floorOnUi, nullptr, ui->floorDownButton, nullptr);
+
+        //Switch floor on the UI to the newly selected floor
         floorOnUi = floors->value(floorNum);
+
+        //Setup floor buttons to new floor
         setupFloorButtons();
     }
 }
 
 void MainWindow::on_floorUpButton_clicked()
 {
+    ui->floorUpButton->setStyleSheet("background-color: yellow");
     floorOnUi->inform(Direction::UP);
 }
 
 void MainWindow::on_floorDownButton_clicked()
 {
+    ui->floorDownButton->setStyleSheet("background-color: yellow");
     floorOnUi->inform(Direction::DOWN);
 }
 
@@ -172,6 +191,7 @@ void MainWindow::on_carNumComboBox_activated(int carNum)
 
 void MainWindow::setupElevatorInterface()
 {
+    //Setup current floor display
     connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 }
