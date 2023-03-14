@@ -21,9 +21,9 @@ void ECS::allocateElevator(int floorNum, Direction direction)
 
 void ECS::floorServiced(int floorNum, Direction direction)
 {
-    Floor* servicedFloor = floors->value(floorNum);
-    if(servicedFloor->isTop()) servicedFloor->serviced(Direction::DOWN); //If elevator was servicing top floor, the floor can only be serviced to go DOWN
-    else if(servicedFloor->getLevel() == Floor::GROUND_LEVEL) servicedFloor->serviced(Direction::UP); //If elevator was servicing ground floor, the floor can only be serviced to go UP
-    else servicedFloor->serviced(direction);
-//    floors->value(floorNum)->serviced(direction);
+//    Floor* servicedFloor = floors->value(floorNum);
+//    if(servicedFloor->isTop()) servicedFloor->serviced(Direction::DOWN); //If elevator was servicing top floor, the floor can only be serviced to go DOWN
+//    else if(servicedFloor->getLevel() == Floor::GROUND_LEVEL) servicedFloor->serviced(Direction::UP); //If elevator was servicing ground floor, the floor can only be serviced to go UP
+//    else servicedFloor->serviced(direction);
+    floors->value(floorNum)->serviced(direction);
 }

@@ -23,12 +23,12 @@ public:
         return (os << "Car number: " << e.carNum << "\nCurrent floor: " << e.currFloor << std::endl);
     }
 
-    bool isRequestedFloor(int floorNum) const;
+    bool isRequestedFloor(int floorNum, Direction requestDirection = Direction::UNKNOWN) const;
     int getCurrFloor() const;
     int getCarNum() const;
 
 public slots:
-    void destFloorRequest(int floorNum);
+    void destFloorRequest(int floorNum, Direction requestDirection = Direction::UNKNOWN);
     void newFloor(int floorNum);
 
 private slots:
@@ -48,7 +48,7 @@ private:
     const int carNum;
     const int numFloors;
     int currFloor;
-    bool *floorRequests;
+    char *floorRequests;
     bool doorsOpen;
     ElevatorState state;
     Direction direction;

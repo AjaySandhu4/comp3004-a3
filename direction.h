@@ -4,7 +4,7 @@
 #include <QTextStream>
 #include <QString>
 
-enum class Direction { DOWN, UP };
+enum class Direction { DOWN, UP, UNKNOWN };
 
 QTextStream& operator<<(QTextStream& stream, Direction direction);
 

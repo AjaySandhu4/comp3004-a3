@@ -9,7 +9,7 @@ Elevator::Elevator(int carNum, int numFloors)
     : carNum(carNum)
     , numFloors(numFloors)
     , currFloor(0)
-    , floorRequests(new bool[numFloors]{0})
+    , floorRequests(new char[numFloors]{0})
     , doorsOpen(true)
     , state(ElevatorState::IDLE)
     , direction(Direction::UP)
@@ -28,7 +28,12 @@ Elevator::~Elevator()
     delete[] floorRequests;
 }
 
-bool Elevator::isRequestedFloor(int floorNum) const { return floorRequests[floorNum]; }
+bool Elevator::isRequestedFloor(int floorNum, Direction requestDirection) const {
+    if(requestDirection == Direction::UP) return floorRequests[floorNum] & REQUESTED_UP;
+    if(requestDirection == Direction::DOWN) return floorRequests[floorNum] & REQUESTED_DOWN;
+    return floorRequests[floorNum];
+}
+
 int Elevator::getCurrFloor() const { return currFloor; }
 int Elevator::getCarNum() const { return carNum; }
 
@@ -39,18 +44,33 @@ bool Elevator::areFloorRequestsEmpty() const {
     return true;
 }
 
-void Elevator::destFloorRequest(int floorNum)
+void Elevator::destFloorRequest(int floorNum, Direction requestDirection)
 {
+    qDebug() << "Car number " << carNum << " has received request for floor " << floorNum;
     if(floorNum == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
         emit floorServiced(currFloor, direction);
-    } else {
-        floorRequests[floorNum] = true; //Add the floor request
-        if(state == ElevatorState::IDLE){
-            state = ElevatorState::WAITING;
-            decideDirectionToGo(); //The first floor request determines the direction the car will travel
+        return;
+    }
+    if(requestDirection == Direction::UNKNOWN){
+        if(floorNum == numFloors-1){
+            requestDirection = Direction::DOWN;
+        } else if(floorNum == 0){
+            requestDirection = Direction::UP;
+        } else if(direction == Direction::UP){
+            requestDirection = currFloor - floorNum < 0 ? Direction::UP : Direction::DOWN;
+        } else if(direction == Direction::DOWN){
+            requestDirection = floorNum - currFloor < 0 ? Direction::DOWN : Direction::UP;
         }
     }
-    std::cout << "Car number " << carNum << " has received request for floor " << floorNum << std::endl;
+    //Add the floor request
+    if(requestDirection == Direction::UP) floorRequests[floorNum] = floorRequests[floorNum] | REQUESTED_UP;
+    if(requestDirection == Direction::DOWN) floorRequests[floorNum] = floorRequests[floorNum] | REQUESTED_DOWN;
+
+    //Change state if necessary
+    if(state == ElevatorState::IDLE){
+        state = ElevatorState::WAITING;
+        decideDirectionToGo(); //The first floor request determines the direction the car will travel
+    }
 }
 
 void Elevator::newFloor(int floorNum)
@@ -58,10 +78,13 @@ void Elevator::newFloor(int floorNum)
     currFloor = floorNum;
     emit reachedFloor(currFloor);
     std::cout << "Car number " << carNum << " has reached floor " << currFloor << std::endl;
-    if(isRequestedFloor(floorNum)){
-        stop();
+    if(currFloor == 0 || currFloor == numFloors-1){
+        direction = currFloor == 0 ? Direction::UP : Direction::DOWN;
+        emit changedDirection(carNum);
     }
-    else{
+    if(isRequestedFloor(currFloor, direction)){
+        stop();
+    } else{
         move();
     }
 }
@@ -70,7 +93,11 @@ void Elevator::stop()
 {
     QTextStream(stdout) << "Elevator " << carNum << " is servicing floor " << currFloor << endl;
     doorsOpen = true;
-    floorRequests[currFloor] = 0; //Remove floor request for current floor
+
+    //Remove floor request for current floor
+    if(direction == Direction::DOWN) floorRequests[currFloor] = floorRequests[currFloor] & ~REQUESTED_DOWN;
+    else if(direction == Direction::UP) floorRequests[currFloor] = floorRequests[currFloor] & ~REQUESTED_UP;
+
     emit floorServiced(currFloor, direction);
     if(areFloorRequestsEmpty()){
         state = ElevatorState::IDLE;
