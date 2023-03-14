@@ -16,21 +16,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    allocationstrategy.cpp \
     ecs.cpp \
     elevator.cpp \
+    elevatorcenteredstrategy.cpp \
     elevatorfloorsensor.cpp \
     floor.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    timedependentstrategy.cpp
 
 HEADERS += \
+    allocationstrategy.h \
     direction.h \
     ecs.h \
     elevator.h \
+    elevatorcenteredstrategy.h \
     elevatorfloorsensor.h \
     elevatorstate.h \
     floor.h \
-    mainwindow.h
+    mainwindow.h \
+    timedependentstrategy.h
 
 FORMS += \
     mainwindow.ui

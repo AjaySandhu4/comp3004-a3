@@ -1,7 +1,8 @@
 #include "ecs.h"
 
-ECS::ECS(QVector<Floor*> *floors, QVector<Elevator*> *elevators)
-    : floors(floors)
+ECS::ECS(AllocationStrategy* strategy, QVector<Floor*> *floors, QVector<Elevator*> *elevators)
+    : strategy(strategy)
+    , floors(floors)
     , elevators(elevators)
 { }
 

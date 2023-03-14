@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ecs(nullptr)
     , floorOnUi(nullptr)
     , elevatorOnUi(nullptr)
+    , currAllocationStrategy(nullptr)
 {
     ui->setupUi(this);
 
@@ -62,27 +63,16 @@ void MainWindow::initElevatorFrame()
 }
 
 void MainWindow::populateFloors(int numFloors) {
-    std::cout << "We are populating " << numFloors << " floors" << std::endl;
     for (int i=0; i<numFloors-1; ++i) {
         floors->push_back(new Floor(i, false));
     }
     floors->push_back(new Floor(numFloors-1, true)); // Last floor is the 'top' floor
-    for (int i=0; i<numFloors; ++i) {
-        std::cout << *(*floors)[i] << std::endl;
-    }
-    std::cout << "There are " << floors->length() << " floors" << std::endl;
-
 }
 
 void MainWindow::populateElevators(int numCars) {
-    std::cout << "We are populating " << numCars << " elevators" << std::endl;
     for (int i=0; i<numCars; ++i) {
         elevators->push_back(new Elevator(i, floors->length()));
     }
-    for (int i=0; i<numCars; ++i) {
-        std::cout << *(*elevators)[i] << std::endl;
-    }
-    std::cout << "There are " << elevators->length() << " elevators" << std::endl;
 }
 
 void MainWindow::clearFloors() {
@@ -129,6 +119,8 @@ void MainWindow::on_startSimulationButton_clicked()
     populateFloors(ui->numFloorsSpinBox->value());
     populateElevators(ui->numElevatorsSpinBox->value());
 
+    initECS();
+
     //Default floor and elevator shown on the UI are floor number 0 and elevator number 0
     floorOnUi = floors->value(0);
     elevatorOnUi = elevators->value(0);
@@ -140,8 +132,9 @@ void MainWindow::on_startSimulationButton_clicked()
 
 void MainWindow::on_resetSimulationButton_clicked()
 {
-//    delete ecs;
-//    ecs = nullptr;
+    delete ecs;
+
+    delete currAllocationStrategy;
 
     clearFloors();
     clearElevators();
@@ -204,7 +197,13 @@ void MainWindow::on_floorRequestComboBox_activated(int floorNum)
     ui->floorRequestComboBox->setCurrentIndex(-1);
 }
 
-//Disconnect elements of UI that are connected to currently displayed elevator
+//Disconnect elements of UI that are connected to current elevator on UI
 void MainWindow::disconnectElevatorFromUi() {
     disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
+}
+
+void MainWindow::initECS() {
+    bool isTimeDependentStrategy = ui->timeDependencyCheckBox->isChecked();
+    currAllocationStrategy = isTimeDependentStrategy ? static_cast<AllocationStrategy*>(new TimeDependentStrategy()) : static_cast<AllocationStrategy*>(new ElevatorCenteredStrategy());
+    ecs = new ECS(currAllocationStrategy, floors, elevators);
 }

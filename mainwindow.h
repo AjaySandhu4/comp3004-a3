@@ -11,6 +11,8 @@
 #include "elevator.h"
 #include "floor.h"
 #include "direction.h"
+#include "elevatorcenteredstrategy.h"
+#include "timedependentstrategy.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,8 +33,9 @@ private:
     QVector<Floor*> *floors;
     QVector<Elevator*> *elevators;
 
-    Floor* floorOnUi;
-    Elevator* elevatorOnUi;
+    Floor *floorOnUi;
+    Elevator *elevatorOnUi;
+    AllocationStrategy *currAllocationStrategy;
 
     void initFloorFrame();
     void initElevatorFrame();
@@ -43,6 +46,7 @@ private:
     void setupFloorButtons();
     void setupElevatorInterface();
     void disconnectElevatorFromUi();
+    void initECS();
 
 private slots:
     void on_startSimulationButton_clicked();

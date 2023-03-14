@@ -37,8 +37,11 @@ bool Elevator::isFloorRequestsEmpty() const {
 
 void Elevator::destFloorRequest(int floorNum)
 {
-    if(floorNum == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)) return;
-    floorRequests[floorNum] = true;
+    if(floorNum == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
+        emit floorServiced(currFloor);
+    } else {
+        floorRequests[floorNum] = true; //Add the floor request
+    }
     std::cout << "Car number " << carNum << " has received request for floor " << floorNum << std::endl;
 }
 
