@@ -10,6 +10,7 @@
 #include "ecs.h"
 #include "elevator.h"
 #include "floor.h"
+#include "direction.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -41,6 +42,7 @@ private:
     void clearElevators();
     void setupFloorButtons();
     void setupElevatorInterface();
+    void disconnectElevatorFromUi();
 
 private slots:
     void on_startSimulationButton_clicked();

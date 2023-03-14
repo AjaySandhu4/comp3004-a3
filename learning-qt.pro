@@ -24,9 +24,11 @@ SOURCES += \
     mainwindow.cpp
 
 HEADERS += \
+    direction.h \
     ecs.h \
     elevator.h \
     elevatorfloorsensor.h \
+    elevatorstate.h \
     floor.h \
     mainwindow.h
 

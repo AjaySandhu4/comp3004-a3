@@ -158,7 +158,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLCDNumber" name="lcdNumber">
+    <widget class="QLCDNumber" name="currFloorDisplay">
      <property name="geometry">
       <rect>
        <x>320</x>

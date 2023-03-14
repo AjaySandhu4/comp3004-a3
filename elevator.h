@@ -4,16 +4,13 @@
 #include <QObject>
 #include <QVector>
 #include <QTimer>
+#include <QDebug>
+#include <QTextStream>
 #include <iostream>
+#include "elevatorfloorsensor.h"
+#include "elevatorstate.h"
+#include "direction.h"
 
-enum ElevatorState {
-    MOVINGUP,
-    MOVINGDOWN,
-    WAITING,
-    BLOCKED,
-    OUTOFSERVICE,
-    IDLE
-};
 
 class Elevator : public QObject
 {
@@ -27,20 +24,41 @@ public:
     }
 
     bool isRequestedFloor(int floorNum) const;
+    int getCurrFloor() const;
 
 public slots:
     void destFloorRequest(int floorNum);
     void newFloor(int floorNum);
 
+private slots:
+    void doorsHaveShut();
+    void doorTimerFinished();
+    void move();
+
 signals:
-    void moving(int startingFloor, ElevatorState state);
+    void moving(int startingFloor, Direction direction);
+    void floorServiced(int floorNum);
+    void reachedFloor(int floorNum);
 
 private:
-    int carNum;
+    const int carNum;
+    const int numFloors;
     int currFloor;
     bool *floorRequests;
     bool doorsOpen;
     ElevatorState state;
+    Direction direction;
+    ElevatorFloorSensor floorSensor;
+    QTimer doorTimer; // Timer used to keep doors open to allow passengers to enter and exit
+    QTimer closeDoorsTimer; // Timer used to keep track of when doors are in process of closing
+
+    const static int DOOR_TIMER_INTERVAL;
+    const static int TIME_DOORS_TAKE_TO_SHUT;
+
+    void stop();
+    void closeDoors();
+    Direction directionToGo() const;
+    bool isFloorRequestsEmpty() const;
 
 //signals:
 

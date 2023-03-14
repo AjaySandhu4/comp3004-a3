@@ -5,8 +5,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <iostream>
-
-enum Direction { DOWN, UP };
+#include "direction.h"
 
 class Floor : public QObject
 {

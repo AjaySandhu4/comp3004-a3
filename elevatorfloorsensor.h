@@ -3,7 +3,8 @@
 
 #include <QObject>
 #include <QTimer>
-#include "elevator.h"
+#include <QDebug>
+#include "direction.h"
 
 class ElevatorFloorSensor : public QObject
 {
@@ -12,7 +13,7 @@ public:
     ElevatorFloorSensor();
 
 public slots:
-    void detectMovement(int startingFloor, ElevatorState state);
+    void detectMovement(int startingFloor, Direction direction);
 
 private slots:
     void onTimeout();
@@ -23,6 +24,7 @@ signals:
 private:
     const static int INTERVAL_BETWEEN_FLOORS;
     QTimer timer;
+    int nextFloor;
 
 };
 

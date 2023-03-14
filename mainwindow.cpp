@@ -103,7 +103,7 @@ void MainWindow::setupFloorButtons() {
     } else {
         ui->floorUpButton->setVisible(false);
     }
-    if(!floorOnUi->getLevel() == Floor::GROUND_LEVEL) {
+    if(floorOnUi->getLevel() != Floor::GROUND_LEVEL) {
         ui->floorDownButton->setVisible(true);
     } else {
         ui->floorDownButton->setVisible(false);
@@ -165,13 +165,15 @@ void MainWindow::on_floorDownButton_clicked()
 
 void MainWindow::on_carNumComboBox_activated(int carNum)
 {
+    disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
     elevatorOnUi = elevators->value(carNum);
     setupElevatorInterface();
 }
 
 void MainWindow::setupElevatorInterface()
 {
-
+    connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
+    ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 }
 
 void MainWindow::on_floorRequestComboBox_activated(int floorNum)
@@ -180,4 +182,9 @@ void MainWindow::on_floorRequestComboBox_activated(int floorNum)
         elevatorOnUi->destFloorRequest(floorNum);
     }
     ui->floorRequestComboBox->setCurrentIndex(-1);
+}
+
+//Disconnect elements of UI that are connected to currently displayed elevator
+void MainWindow::disconnectElevatorFromUi() {
+    disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
 }
