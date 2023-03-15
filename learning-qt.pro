@@ -25,7 +25,8 @@ SOURCES += \
     floor.cpp \
     main.cpp \
     mainwindow.cpp \
-    timedependentstrategy.cpp
+    timedependentstrategy.cpp \
+    weightsensor.cpp
 
 HEADERS += \
     allocationstrategy.h \
@@ -37,7 +38,8 @@ HEADERS += \
     elevatorstate.h \
     floor.h \
     mainwindow.h \
-    timedependentstrategy.h
+    timedependentstrategy.h \
+    weightsensor.h
 
 FORMS += \
     mainwindow.ui

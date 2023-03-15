@@ -188,6 +188,14 @@ void MainWindow::setupElevatorInterface()
     //Setup current floor display
     connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
+
+    //Connect to elevator's weight sensor
+
+    //Connect to elevator's fire handling
+
+    //Connect to elevator's help handling
+
+//    connect(elevatorOnUi, &Elevator::doorsClosing, ui->)
 }
 
 void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
@@ -207,4 +215,10 @@ void MainWindow::initECS() {
     bool isTimeDependentStrategy = ui->timeDependencyCheckBox->isChecked();
     currAllocationStrategy = isTimeDependentStrategy ? static_cast<AllocationStrategy*>(new TimeDependentStrategy()) : static_cast<AllocationStrategy*>(new ElevatorCenteredStrategy());
     ecs = new ECS(currAllocationStrategy, floors, elevators);
+}
+
+void MainWindow::on_helpButton_clicked()
+{
+//    elevatorOnUi->handleHelp();
+    ui->speakButton->setVisible(true);
 }

@@ -10,6 +10,7 @@
 #include "elevatorfloorsensor.h"
 #include "elevatorstate.h"
 #include "direction.h"
+#include "weightsensor.h"
 
 
 class Elevator : public QObject
@@ -28,10 +29,12 @@ public:
     int getCarNum() const;
     ElevatorState getState() const;
     Direction getDirection() const;
+    bool isEmpty() const;
 
 public slots:
     void destFloorRequest(int floorNum, Direction requestDirection = Direction::UNKNOWN);
     void newFloor(int floorNum);
+    void handleOverload();
 
 private slots:
     void doorsHaveShut();
@@ -42,6 +45,7 @@ signals:
     void moving(int startingFloor, Direction direction);
     void floorServiced(int floorNum, Direction direction);
     void reachedFloor(int floorNum);
+    void doorsClosing();
 
 private:
     const int carNum;
@@ -52,6 +56,7 @@ private:
     ElevatorState state;
     Direction direction;
     ElevatorFloorSensor floorSensor;
+    WeightSensor weightSensor;
     QTimer doorTimer; // Timer used to keep doors open to allow passengers to enter and exit
     QTimer closeDoorsTimer; // Timer used to keep track of when doors are in process of closing
 
