@@ -148,7 +148,7 @@
       <string>Request Floor</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="floorRequestComboBox">
+    <widget class="QComboBox" name="elevatorFloorRequestComboBox">
      <property name="geometry">
       <rect>
        <x>10</x>

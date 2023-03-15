@@ -26,6 +26,8 @@ public:
     bool isRequestedFloor(int floorNum, Direction requestDirection = Direction::UNKNOWN) const;
     int getCurrFloor() const;
     int getCarNum() const;
+    ElevatorState getState() const;
+    Direction getDirection() const;
 
 public slots:
     void destFloorRequest(int floorNum, Direction requestDirection = Direction::UNKNOWN);
@@ -40,9 +42,6 @@ signals:
     void moving(int startingFloor, Direction direction);
     void floorServiced(int floorNum, Direction direction);
     void reachedFloor(int floorNum);
-    void changedDirection(int carNum);
-    void nowIdle(int carNum);
-
 
 private:
     const int carNum;

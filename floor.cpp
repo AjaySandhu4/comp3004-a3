@@ -17,12 +17,12 @@ bool Floor::isWaitingDown() const { return waitingDown; }
 void Floor::inform(Direction direction) {
     if(direction == Direction::UP && waitingUp == false){
         waitingUp = true;
-        emit requestForElevator(level, Direction::UP);
         QTextStream(stdout) << "Floor " << level << " being informed in direction UP" << endl;
+        emit requestForElevator(level, Direction::UP);
     } else if(direction == Direction::DOWN  && waitingDown == false){
         waitingDown = true;
-        emit requestForElevator(level, Direction::DOWN);
         QTextStream(stdout) << "Floor " << level << " being informed in direction DOWN" << endl;
+        emit requestForElevator(level, Direction::DOWN); 
     }
 
 }

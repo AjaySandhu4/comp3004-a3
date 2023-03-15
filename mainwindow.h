@@ -54,7 +54,7 @@ private slots:
     void on_floorUpButton_clicked();
     void on_floorDownButton_clicked();
     void on_carNumComboBox_activated(int carNum);
-    void on_floorRequestComboBox_activated(int floorNum);
+    void on_elevatorFloorRequestComboBox_activated(int floorNum);
     void setupFloorButtons();
 };
 #endif // MAINWINDOW_H

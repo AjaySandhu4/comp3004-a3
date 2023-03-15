@@ -15,7 +15,7 @@ public:
     virtual ~AllocationStrategy();
 
 public slots:
-    virtual void allocateElevator(int floorNum, Direction direction, QVector<Elevator*> *cars) = 0;
+    virtual void allocateElevator(int requestFloor, Direction requestDirection, QVector<Elevator*> *cars, int totalFloors) = 0;
     virtual void rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors) = 0;
 
 };

@@ -57,10 +57,10 @@ void MainWindow::initElevatorFrame()
         ui->carNumComboBox->addItem(QString::number(i));
 
     //Initalize combobox with floor numbers (to make requests)
-    ui->floorRequestComboBox->clear();
+    ui->elevatorFloorRequestComboBox->clear();
     for(int i=0; i<floors->length(); ++i)
-        ui->floorRequestComboBox->addItem(QString::number(i));
-    ui->floorRequestComboBox->setCurrentIndex(-1);
+        ui->elevatorFloorRequestComboBox->addItem(QString::number(i));
+    ui->elevatorFloorRequestComboBox->setCurrentIndex(-1);
 
     setupElevatorInterface();
     ui->elevatorFrame->setVisible(true);
@@ -118,6 +118,7 @@ void MainWindow::on_startSimulationButton_clicked()
 
     //Default floor and elevator shown on the UI are floor number 0 and elevator number 0
     floorOnUi = floors->value(0);
+    connect(floorOnUi, &Floor::floorServiced, this, &MainWindow::setupFloorButtons);
     elevatorOnUi = elevators->value(0);
 
     initFloorFrame();
@@ -154,7 +155,6 @@ void MainWindow::on_floorNumComboBox_activated(int floorNum)
 
         //Switch floor on the UI to the newly selected floor
         floorOnUi = floors->value(floorNum);
-
         connect(floorOnUi, &Floor::floorServiced, this, &MainWindow::setupFloorButtons);
 
         //Setup floor buttons to new floor
@@ -190,12 +190,12 @@ void MainWindow::setupElevatorInterface()
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 }
 
-void MainWindow::on_floorRequestComboBox_activated(int floorNum)
+void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
 {
     if(!elevatorOnUi->isRequestedFloor(floorNum)){ //If not already a floor request...
         elevatorOnUi->destFloorRequest(floorNum);
     }
-    ui->floorRequestComboBox->setCurrentIndex(-1);
+    ui->elevatorFloorRequestComboBox->setCurrentIndex(-1);
 }
 
 //Disconnect elements of UI that are connected to current elevator on UI

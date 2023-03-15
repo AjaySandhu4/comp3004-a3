@@ -1,6 +1,6 @@
 #include "timedependentstrategy.h"
 
-void TimeDependentStrategy::allocateElevator(int floorNum, Direction direction, QVector<Elevator*> *cars)
+void TimeDependentStrategy::allocateElevator(int requestFloor, Direction requestDirection, QVector<Elevator*> *cars, int totalFloors)
 {
 
 }

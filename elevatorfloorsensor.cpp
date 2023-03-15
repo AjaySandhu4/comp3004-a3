@@ -8,7 +8,7 @@ ElevatorFloorSensor::ElevatorFloorSensor() : nextFloor(-1)
 }
 
 void ElevatorFloorSensor::detectMovement(int floorNum, Direction direction){
-    qDebug() << "Floor sensor detecting movement from floor" << floorNum;
+//    qDebug() << "Floor sensor detecting movement from floor" << floorNum;
     if (direction == Direction::UP) nextFloor = floorNum + 1;
     else if (direction == Direction::DOWN) nextFloor = floorNum - 1;
     else qDebug() << "Floor sensor detects erroneous elevator movement";

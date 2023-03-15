@@ -15,7 +15,7 @@ public:
     ECS(AllocationStrategy* strategy, QVector<Floor*> *floors, QVector<Elevator*> *elevators);
 
 public slots:
-    void allocateElevator(int floorNum, Direction direction);
+    void allocateElevator(int requestFloor, Direction requestDirection);
     void floorServiced(int floorNum, Direction direction);
 
 private:
