@@ -229,7 +229,7 @@ background-color: rgb(0, 0, 0);</string>
       <string>Elevator</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_7">
+    <widget class="QPushButton" name="elevatorFireAlarmButton">
      <property name="geometry">
       <rect>
        <x>330</x>
@@ -268,7 +268,7 @@ background-color: rgb(0, 0, 0);</string>
       <string>Disembark (-80kg)</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="openDoorButton">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -281,7 +281,7 @@ background-color: rgb(0, 0, 0);</string>
       <string>Open Door</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="cloorDoorButton">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -404,7 +404,7 @@ background-color: rgb(0, 0, 0);</string>
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="buildingFireButton">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -417,7 +417,7 @@ background-color: rgb(0, 0, 0);</string>
       <string>Building Fire</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="powerOutageButton">
      <property name="geometry">
       <rect>
        <x>110</x>

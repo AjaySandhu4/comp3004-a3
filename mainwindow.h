@@ -37,6 +37,8 @@ private:
     Elevator *elevatorOnUi;
     AllocationStrategy *currAllocationStrategy;
 
+    const static int SIM_PASSENGER_WEIGHT;
+
     void initFloorFrame();
     void initElevatorFrame();
     void populateFloors(int numFloors);
@@ -57,5 +59,13 @@ private slots:
     void on_elevatorFloorRequestComboBox_activated(int floorNum);
     void setupFloorButtons();
     void on_helpButton_clicked();
+    void on_embarkButton_clicked();
+    void on_disembarkButton_clicked();
+    void on_elevatorFireAlarmButton_clicked();
+    void on_openDoorButton_clicked();
+    void on_cloorDoorButton_clicked();
+    void on_speakButton_clicked();
+    void on_buildingFireButton_clicked();
+    void on_powerOutageButton_clicked();
 };
 #endif // MAINWINDOW_H

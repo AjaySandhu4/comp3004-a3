@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     allocationstrategy.cpp \
     direction.cpp \
+    doorlightsensor.cpp \
     ecs.cpp \
     elevator.cpp \
     elevatorcenteredstrategy.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 HEADERS += \
     allocationstrategy.h \
     direction.h \
+    doorlightsensor.h \
     ecs.h \
     elevator.h \
     elevatorcenteredstrategy.h \

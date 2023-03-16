@@ -9,15 +9,20 @@ Elevator::Elevator(int carNum, int numFloors)
     : carNum(carNum)
     , numFloors(numFloors)
     , currFloor(0)
+    , state(ElevatorState::IDLE)
     , floorRequests(new char[numFloors]{0})
     , doorsOpen(true)
-    , state(ElevatorState::IDLE)
+    , weightSensor(new WeightSensor())
+    , doorLightSensor(new DoorLightSensor())
     , direction(Direction::UP)
+    , consecutiveDoorInterruptions(0)
 {
     connect(this, &Elevator::moving, &floorSensor, &ElevatorFloorSensor::detectMovement);
     connect(&floorSensor, &ElevatorFloorSensor::detectedFloor, this, &Elevator::newFloor);
 
-    connect(&weightSensor, &WeightSensor::overload, this, &Elevator::handleOverload);
+    connect(weightSensor, &WeightSensor::overload, this, &Elevator::handleOverload);
+
+    connect(doorLightSensor, &DoorLightSensor::triggered, this, &Elevator::handleDoorObstacle);
 
     connect(&doorTimer, &QTimer::timeout, this, &Elevator::doorTimerFinished);
     connect(&closeDoorsTimer, &QTimer::timeout, this, &Elevator::doorsHaveShut);
@@ -27,6 +32,7 @@ Elevator::Elevator(int carNum, int numFloors)
 
 Elevator::~Elevator()
 {
+    delete weightSensor;
     delete[] floorRequests;
 }
 
@@ -40,6 +46,7 @@ int Elevator::getCurrFloor() const { return currFloor; }
 int Elevator::getCarNum() const { return carNum; }
 ElevatorState Elevator::getState() const { return state; }
 Direction Elevator::getDirection() const { return direction; }
+WeightSensor* Elevator::getWeightSensor() const { return weightSensor; }
 
 bool Elevator::areFloorRequestsEmpty() const {
     for(int i=0; i<numFloors; ++i){
@@ -114,7 +121,9 @@ void Elevator::stop()
 void Elevator::closeDoors()
 {
     closeDoorsTimer.start(TIME_DOORS_TAKE_TO_SHUT);
-    emit doorsClosing();
+    doorLightSensor->setActive(true);
+    QTextStream(stdout) << "Doors closing..." << endl;
+//    emit doorsClosing();
 }
 
 void Elevator::move()
@@ -144,7 +153,7 @@ void Elevator::decideDirectionToGo()
 void Elevator::doorTimerFinished() {
     doorTimer.stop();
 
-    if(weightSensor.overloadedBy() > 0){
+    if(weightSensor->overloadedBy() > 0){
         handleOverload();
     } else if(state == ElevatorState::IDLE){ //If still idle (no floor requests received), restart the timer...
         doorTimer.start(DOOR_TIMER_INTERVAL);
@@ -155,6 +164,8 @@ void Elevator::doorTimerFinished() {
 
 void Elevator::doorsHaveShut() {
     closeDoorsTimer.stop();
+    doorLightSensor->setActive(false);
+    consecutiveDoorInterruptions = 0;
     QTextStream(stdout) << "Elevator " << carNum << " door's have shut at floor " << currFloor << "..." << endl;
     doorsOpen = false;
     move();
@@ -163,6 +174,15 @@ void Elevator::doorsHaveShut() {
 void Elevator::handleOverload() {
     doorTimer.stop();
     //TODO: use audio system and display...
-    QTextStream(stdout) << "Elevator " << carNum << " is overloaded by " << weightSensor.overloadedBy() << "kg" << endl;
+    QTextStream(stdout) << "Elevator " << carNum << " is overloaded by " << weightSensor->overloadedBy() << "kg" << endl;
     doorTimer.start(DOOR_TIMER_INTERVAL);
+}
+
+void Elevator::handleDoorObstacle() {
+    closeDoorsTimer.stop();
+    ++consecutiveDoorInterruptions;
+    QTextStream(stdout) << "Elevator " << carNum << " has encountered a door obstacle" << endl;
+    if(consecutiveDoorInterruptions > 1){
+        qWarning() << "Elevator " << carNum << " has encountered repeated door obstacles. Please do not get in way of doors as they close!" << endl;
+    }
 }

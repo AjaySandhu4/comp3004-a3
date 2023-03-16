@@ -1,12 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+const int MainWindow::SIM_PASSENGER_WEIGHT = 80;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , elevators(new QVector<Elevator*>)
-    , floors(new QVector<Floor*>)
     , ecs(nullptr)
+    , floors(new QVector<Floor*>)
+    , elevators(new QVector<Elevator*>)
     , floorOnUi(nullptr)
     , elevatorOnUi(nullptr)
     , currAllocationStrategy(nullptr)
@@ -189,10 +191,6 @@ void MainWindow::setupElevatorInterface()
     connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 
-    //Connect to elevator's weight sensor
-
-    //Connect to elevator's fire handling
-
     //Connect to elevator's help handling
 
 //    connect(elevatorOnUi, &Elevator::doorsClosing, ui->)
@@ -221,4 +219,45 @@ void MainWindow::on_helpButton_clicked()
 {
 //    elevatorOnUi->handleHelp();
     ui->speakButton->setVisible(true);
+}
+
+void MainWindow::on_embarkButton_clicked()
+{
+    elevatorOnUi->getWeightSensor()->addWeight(SIM_PASSENGER_WEIGHT);
+//    elevatorOnUi->
+}
+
+void MainWindow::on_disembarkButton_clicked()
+{
+    elevatorOnUi->getWeightSensor()->reduceWeight(SIM_PASSENGER_WEIGHT);
+}
+
+void MainWindow::on_elevatorFireAlarmButton_clicked()
+{
+//    elevatorOnUi->handleFire();
+}
+
+void MainWindow::on_openDoorButton_clicked()
+{
+//    elevatorOnUi->onOpenDoorButtonPress();
+}
+
+void MainWindow::on_cloorDoorButton_clicked()
+{
+//    elevatorOnUi->onCloseDoorButtonPress();
+}
+
+void MainWindow::on_speakButton_clicked()
+{
+//    elevatorOnUi->receiveMicInput();
+}
+
+void MainWindow::on_buildingFireButton_clicked()
+{
+//    ecs->handleFire()
+}
+
+void MainWindow::on_powerOutageButton_clicked()
+{
+//    ecs->handlePowerOut()
 }
