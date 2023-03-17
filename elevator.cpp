@@ -59,9 +59,7 @@ void Elevator::destFloorRequest(int requestFloor, Direction requestDirection)
 {
     QTextStream(stdout) << "Car number " << carNum << " has received request for floor " << requestFloor << " in direction " << requestDirection << endl;
     if(requestFloor == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
-        qDebug() << "Floor is being serviced immediately on request";
         emit floorServiced(currFloor, direction);
-        qDebug() << "Is it getting here?";
         return;
     }
     if(requestDirection == Direction::UNKNOWN){
@@ -91,7 +89,7 @@ void Elevator::newFloor(int floorNum)
     currFloor = floorNum;
     emit reachedFloor(currFloor);
 
-    std::cout << "Car number " << carNum << " has reached floor " << currFloor << std::endl;
+    QTextStream(stdout) << "Car number " << carNum << " has reached floor " << currFloor << endl;
 
     //Change direction if car has reached the top floor or ground floor
     if(currFloor == 0 || currFloor == numFloors-1){
@@ -120,10 +118,17 @@ void Elevator::stop()
 
 void Elevator::closeDoors()
 {
+    ringBell();
     closeDoorsTimer.start(TIME_DOORS_TAKE_TO_SHUT);
     doorLightSensor->setActive(true);
-    QTextStream(stdout) << "Doors closing..." << endl;
+    QTextStream(stdout) << "Elevator " << carNum << " doors are closing..." << endl;
 //    emit doorsClosing();
+}
+
+void Elevator::openDoors()
+{
+    ringBell();
+    doorsOpen = true;
 }
 
 void Elevator::move()
@@ -174,15 +179,27 @@ void Elevator::doorsHaveShut() {
 void Elevator::handleOverload() {
     doorTimer.stop();
     //TODO: use audio system and display...
-    QTextStream(stdout) << "Elevator " << carNum << " is overloaded by " << weightSensor->overloadedBy() << "kg" << endl;
+    qWarning() << "Elevator " << carNum << " is overloaded by " << weightSensor->overloadedBy() << "kg!" << endl;
     doorTimer.start(DOOR_TIMER_INTERVAL);
 }
 
 void Elevator::handleDoorObstacle() {
     closeDoorsTimer.stop();
     ++consecutiveDoorInterruptions;
-    QTextStream(stdout) << "Elevator " << carNum << " has encountered a door obstacle" << endl;
+    qWarning() << "Elevator " << carNum << " has encountered a door obstacle!" << endl;
     if(consecutiveDoorInterruptions > 1){
         qWarning() << "Elevator " << carNum << " has encountered repeated door obstacles. Please do not get in way of doors as they close!" << endl;
     }
+}
+
+void Elevator::handleFire() {
+    memset(floorRequests, 0, numFloors); //Cancel all destination floor requests on current elevator
+    state = ElevatorState::OUT_OF_SERVICE;
+    direction = Direction::DOWN;
+    floorRequests[0] = REQUESTED_UP;
+    closeDoors();
+}
+
+void Elevator::ringBell() {
+    QTextStream(stdout) << "Elevator " << carNum << " ringing its bell: *ring*" << endl;
 }

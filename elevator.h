@@ -38,6 +38,7 @@ public slots:
     void newFloor(int floorNum);
     void handleOverload();
     void handleDoorObstacle();
+    void handleFire();
 
 private slots:
     void doorsHaveShut();
@@ -72,8 +73,10 @@ private:
 
     void stop();
     void closeDoors();
+    void openDoors();
     void decideDirectionToGo();
     bool areFloorRequestsEmpty() const;
+    void ringBell();
 
 //signals:
 
