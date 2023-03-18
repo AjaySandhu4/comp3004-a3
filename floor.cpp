@@ -17,19 +17,15 @@ bool Floor::isWaitingDown() const { return waitingDown; }
 void Floor::inform(Direction direction) {
     if(direction == Direction::UP && waitingUp == false){
         waitingUp = true;
-        QTextStream(stdout) << "Floor " << level << " being informed in direction UP" << endl;
         emit requestForElevator(level, Direction::UP);
     } else if(direction == Direction::DOWN  && waitingDown == false){
         waitingDown = true;
-        QTextStream(stdout) << "Floor " << level << " being informed in direction DOWN" << endl;
         emit requestForElevator(level, Direction::DOWN); 
     }
 
 }
 
 void Floor::serviced(Direction direction) {
-//    QString d = direction == Direction::UP ? "UP" : "DOWN";
-    QTextStream(stdout) << "Floor " << level << " being serviced in direction " << direction << "!" << endl;
     if(direction == Direction::UP) waitingUp = false;
     if(direction == Direction::DOWN) waitingDown = false;
     emit floorServiced();

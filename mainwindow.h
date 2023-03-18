@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QString>
-#include <iostream>
+#include <QTextStream>
 
 #include "ecs.h"
 #include "elevator.h"
@@ -50,6 +50,11 @@ private:
     void initECS();
 
 private slots:
+    void setupFloorButtons();
+    void toggleWeightButtons();
+    void setTextDisplay(const QString&);
+    void setAudioOutput(const QString&);
+
     void on_startSimulationButton_clicked();
     void on_resetSimulationButton_clicked();
     void on_floorNumComboBox_activated(int floorNum);
@@ -57,13 +62,13 @@ private slots:
     void on_floorDownButton_clicked();
     void on_carNumComboBox_activated(int carNum);
     void on_elevatorFloorRequestComboBox_activated(int floorNum);
-    void setupFloorButtons();
+
     void on_helpButton_clicked();
     void on_embarkButton_clicked();
     void on_disembarkButton_clicked();
     void on_elevatorFireAlarmButton_clicked();
     void on_openDoorButton_clicked();
-    void on_cloorDoorButton_clicked();
+    void on_closeDoorButton_released();
     void on_speakButton_clicked();
     void on_buildingFireButton_clicked();
     void on_powerOutageButton_clicked();

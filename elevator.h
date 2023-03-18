@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QTextStream>
+#include <QString>
 #include <iostream>
 #include "elevatorfloorsensor.h"
 #include "elevatorstate.h"
@@ -32,6 +33,9 @@ public:
     Direction getDirection() const;
     bool isEmpty() const;
     WeightSensor* getWeightSensor() const;
+    bool areDoorsOpen() const;
+    void onOpenButtonPress();
+    void onCloseButtonRelease();
 
 public slots:
     void destFloorRequest(int floorNum, Direction requestDirection = Direction::UNKNOWN);
@@ -50,6 +54,8 @@ signals:
     void floorServiced(int floorNum, Direction direction);
     void reachedFloor(int floorNum);
     void doorsClosing();
+    void voice(const QString&);
+    void textMessage(const QString&);
 
 private:
     const int carNum;

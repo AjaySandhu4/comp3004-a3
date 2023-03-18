@@ -24,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    std::cout << "Main window destructor called" << std::endl;
     if(ecs != nullptr){
         delete ecs;
     }
@@ -64,8 +63,8 @@ void MainWindow::initElevatorFrame()
         ui->elevatorFloorRequestComboBox->addItem(QString::number(i));
     ui->elevatorFloorRequestComboBox->setCurrentIndex(-1);
 
-    setupElevatorInterface();
     ui->elevatorFrame->setVisible(true);
+    setupElevatorInterface();
 }
 
 void MainWindow::populateFloors(int numFloors) {
@@ -168,12 +167,14 @@ void MainWindow::on_floorUpButton_clicked()
 {
     ui->floorUpButton->setStyleSheet("background-color: yellow");
     floorOnUi->inform(Direction::UP);
+    QTextStream(stdout) << "User has pressed the " << Direction::UP << " button from floor " << floorOnUi->getLevel() << "..." << endl;
 }
 
 void MainWindow::on_floorDownButton_clicked()
 {
     ui->floorDownButton->setStyleSheet("background-color: yellow");
     floorOnUi->inform(Direction::DOWN);
+    QTextStream(stdout) << "User has pressed the " << Direction::DOWN << " button from floor " << floorOnUi->getLevel() << "..." << endl;
 }
 
 void MainWindow::on_carNumComboBox_activated(int carNum)
@@ -191,9 +192,19 @@ void MainWindow::setupElevatorInterface()
     connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 
-    //Connect to elevator's help handling
+    connect(elevatorOnUi, SIGNAL(voice(const QString&)), this, SLOT(setTextDisplay(const QString&)));
+    connect(elevatorOnUi, SIGNAL(textMessage(const QString&)), this, SLOT(setAudioOutput(const QString&)));
 
-//    connect(elevatorOnUi, &Elevator::doorsClosing, ui->)
+    connect(elevatorOnUi, &Elevator::floorServiced, this, &MainWindow::setupElevatorInterface);
+
+    connect(elevatorOnUi, &Elevator::moving, this, &MainWindow::toggleWeightButtons);
+    toggleWeightButtons();
+}
+
+void MainWindow::toggleWeightButtons() {
+    // Weight buttons are only shown if the doors are open
+    ui->embarkButton->setVisible(elevatorOnUi->areDoorsOpen());
+    ui->disembarkButton->setVisible(elevatorOnUi->areDoorsOpen() && !elevatorOnUi->isEmpty()); //Only show disembark button if elevator is also not empty
 }
 
 void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
@@ -202,11 +213,15 @@ void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
         elevatorOnUi->destFloorRequest(floorNum);
     }
     ui->elevatorFloorRequestComboBox->setCurrentIndex(-1);
+    QTextStream(stdout) << "User has made a request for floor " << floorNum << " from elevator " << elevatorOnUi->getCarNum() << "..." << endl;
 }
 
 //Disconnect elements of UI that are connected to current elevator on UI
 void MainWindow::disconnectElevatorFromUi() {
     disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
+    disconnect(elevatorOnUi, nullptr, this, nullptr);
+    disconnect(elevatorOnUi, nullptr, ui->textDisplay, nullptr);
+    disconnect(elevatorOnUi, nullptr, ui->audioOutput, nullptr);
 }
 
 void MainWindow::initECS() {
@@ -223,28 +238,33 @@ void MainWindow::on_helpButton_clicked()
 
 void MainWindow::on_embarkButton_clicked()
 {
+    QTextStream(stdout) << "User has embarked elevator " << elevatorOnUi->getCarNum() << "..." << endl;
     elevatorOnUi->getWeightSensor()->addWeight(SIM_PASSENGER_WEIGHT);
+    toggleWeightButtons();
 //    elevatorOnUi->
 }
 
 void MainWindow::on_disembarkButton_clicked()
 {
-    elevatorOnUi->getWeightSensor()->reduceWeight(SIM_PASSENGER_WEIGHT);
+    QTextStream(stdout) << "User has disembarked elevator " << elevatorOnUi->getCarNum() << "..." << endl;
+    elevatorOnUi->getWeightSensor()->reduceWeight(SIM_PASSENGER_WEIGHT); 
+    toggleWeightButtons();
 }
 
 void MainWindow::on_elevatorFireAlarmButton_clicked()
 {
 //    elevatorOnUi->handleFire();
+    QTextStream(stdout) << "User has pulled fire alarm in elevator " << elevatorOnUi->getCarNum() << "!" << endl;
 }
 
 void MainWindow::on_openDoorButton_clicked()
 {
-//    elevatorOnUi->onOpenDoorButtonPress();
+    elevatorOnUi->onOpenButtonPress();
 }
 
-void MainWindow::on_cloorDoorButton_clicked()
+void MainWindow::on_closeDoorButton_released()
 {
-//    elevatorOnUi->onCloseDoorButtonPress();
+    elevatorOnUi->onCloseButtonRelease();
 }
 
 void MainWindow::on_speakButton_clicked()
@@ -261,3 +281,17 @@ void MainWindow::on_powerOutageButton_clicked()
 {
 //    ecs->handlePowerOut()
 }
+
+void MainWindow::setTextDisplay(const QString& msg)
+{
+    ui->textDisplay->setText(msg);
+    QTimer::singleShot(5000, ui->textDisplay, &QTextBrowser::clear);
+}
+
+void MainWindow::setAudioOutput(const QString& msg)
+{
+    ui->audioOutput->setText(msg);
+    QTimer::singleShot(5000, ui->audioOutput, &QTextBrowser::clear);
+}
+
+

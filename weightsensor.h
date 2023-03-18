@@ -18,6 +18,7 @@ public slots:
 
 signals:
     void overload();
+    void overloadResolved();
 
 private:
     int weight;
