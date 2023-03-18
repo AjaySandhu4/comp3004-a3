@@ -10,6 +10,8 @@ ECS::ECS(AllocationStrategy* strategy, QVector<Floor*> *floors, QVector<Elevator
     }
     for(int i=0; i<elevators->length(); ++i){
         connect(elevators->value(i), &Elevator::floorServiced, this, &ECS::floorServiced);
+        connect(this, &ECS::fire, elevators->value(i), &Elevator::handleFire);
+        connect(this, &ECS::powerOut, elevators->value(i), &Elevator::handlePowerOut);
     }
 }
 
@@ -21,4 +23,14 @@ void ECS::allocateElevator(int requestFloor, Direction requestDirection)
 void ECS::floorServiced(int floorNum, Direction direction)
 {
     floors->value(floorNum)->serviced(direction);
+}
+
+void ECS::handleFire(){
+    QTextStream(stdout) << "ECS: Signalled of a fire in the building!" << endl;
+    emit fire();
+}
+
+void ECS::handlePowerOut(){
+    QTextStream(stdout) << "ECS: Signalled of a power outage in the building!" << endl;
+    emit powerOut();
 }

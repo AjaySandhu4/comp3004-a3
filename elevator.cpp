@@ -4,6 +4,7 @@ const int Elevator::DOOR_TIMER_INTERVAL = 8000; //Takes 8 seconds for elevator t
 const int Elevator::TIME_DOORS_TAKE_TO_SHUT = 2500; //Takes 2.5 seconds from elevator telling doors to close to them actually being shut
 const char Elevator::REQUESTED_UP = 0b10; //Bitmask that represents that a floor request exists in the UP direction
 const char Elevator::REQUESTED_DOWN = 0b01; //Bitmask that represents that a floor request exists in the DOWN direction
+const int Elevator::SAFE_FLOOR = 0; //Safe floor designated as floor 0
 
 Elevator::Elevator(int carNum, int numFloors)
     : carNum(carNum)
@@ -16,6 +17,7 @@ Elevator::Elevator(int carNum, int numFloors)
     , doorLightSensor(new DoorLightSensor())
     , direction(Direction::UP)
     , consecutiveDoorInterruptions(0)
+    , outOfService(false)
 {
     connect(this, &Elevator::moving, &floorSensor, &ElevatorFloorSensor::detectMovement);
     connect(&floorSensor, &ElevatorFloorSensor::detectedFloor, this, &Elevator::newFloor);
@@ -47,8 +49,10 @@ int Elevator::getCarNum() const { return carNum; }
 ElevatorState Elevator::getState() const { return state; }
 Direction Elevator::getDirection() const { return direction; }
 WeightSensor* Elevator::getWeightSensor() const { return weightSensor; }
+DoorLightSensor* Elevator::getDoorLightSensor() const { return doorLightSensor; }
 bool Elevator::areDoorsOpen() const { return doorsOpen; }
 bool Elevator::isEmpty() const { return !weightSensor->isLoaded(); }
+bool Elevator::isOutOfService() const { return outOfService; }
 
 bool Elevator::areFloorRequestsEmpty() const {
     for(int i=0; i<numFloors; ++i){
@@ -60,7 +64,7 @@ bool Elevator::areFloorRequestsEmpty() const {
 void Elevator::destFloorRequest(int requestFloor, Direction requestDirection)
 {
     if(requestFloor == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
-        emit floorServiced(currFloor, direction);
+        emit floorServiced(currFloor, requestDirection);
         return;
     }
     if(requestDirection == Direction::UNKNOWN){
@@ -110,16 +114,17 @@ void Elevator::stop()
     if(direction == Direction::DOWN) floorRequests[currFloor] = floorRequests[currFloor] & ~REQUESTED_DOWN;
     else if(direction == Direction::UP) floorRequests[currFloor] = floorRequests[currFloor] & ~REQUESTED_UP;
 
-    emit floorServiced(currFloor, direction);
-
-    if(state == ElevatorState::OUT_OF_SERVICE){
+    if(outOfService){
         // Audio and text telling passengers to disembark as the elevator was put out of service (e.g. through a power outage or fire)
         voice("The elevator has reached a safe floor... Please disembark!");
         textMessage("Safe floor reached. Please disembark safely.");
+        QTextStream(stdout) << "Elevator " << carNum << ": Reached safe floor " << currFloor <<"..."<< endl;
     } else {
         state = areFloorRequestsEmpty() ? ElevatorState::IDLE : ElevatorState::WAITING;
         doorTimer.start(DOOR_TIMER_INTERVAL);
     }
+
+    emit floorServiced(currFloor, direction);
 
 }
 
@@ -129,7 +134,6 @@ void Elevator::closeDoors()
     closeDoorsTimer.start(TIME_DOORS_TAKE_TO_SHUT);
     doorLightSensor->setActive(true);
     QTextStream(stdout) << "Elevator " << carNum << ": Doors are closing..." << endl;
-//    emit doorsClosing();
 }
 
 void Elevator::openDoors()
@@ -166,7 +170,7 @@ void Elevator::decideDirectionToGo()
 void Elevator::doorTimerFinished() {
     doorTimer.stop();
 
-    if(weightSensor->overloadedBy() > 0){
+    if(weightSensor->overloadedBy() > 0){ // Check if still overloaded before continuing
         handleOverload();
     } else if(state == ElevatorState::IDLE){ //If still idle (no floor requests received), restart the timer (elevator won't close doors and move)
         doorTimer.start(DOOR_TIMER_INTERVAL);
@@ -186,32 +190,55 @@ void Elevator::doorsHaveShut() {
 
 void Elevator::handleOverload() {
     doorTimer.stop();
-    //TODO: use audio system and display...
-    QString overload = "Elevator " + QString::number(carNum) +" is overloaded!";
-    voice(overload);
-    textMessage(overload);
-    qWarning() << "Elevator " << carNum << " is overloaded by " << weightSensor->overloadedBy() << "kg!" << endl;
+    voice("Elevator is overloaded... Please reduce the load...");
+    textMessage("Elevator is overloaded by " + QString::number(weightSensor->overloadedBy()) + "kg!");
+    QTextStream(stdout) << "Elevator " << carNum << ": Overloaded by " << weightSensor->overloadedBy() << "kg!" << endl;
     doorTimer.start(DOOR_TIMER_INTERVAL);
 }
 
 void Elevator::handleDoorObstacle() {
     closeDoorsTimer.stop();
     ++consecutiveDoorInterruptions;
-    qWarning() << "Elevator " << carNum << " has encountered a door obstacle!" << endl;
+    QTextStream(stdout) << "Elevator " << carNum << ": Encountered a door obstacle" << endl;
     if(consecutiveDoorInterruptions > 1){
-        qWarning() << "Elevator " << carNum << " has encountered repeated door obstacles. Please do not get in way of doors as they close!" << endl;
+        voice("Do not get in way of doors as they close!");
+        textMessage("Do not get in way of doors as they close!");
     }
+    doorLightSensor->setActive(false);
+    doorTimer.start(DOOR_TIMER_INTERVAL);
 }
 
 void Elevator::handleFire() {
-    memset(floorRequests, 0, numFloors); //Cancel all destination floor requests on current elevator
-    state = ElevatorState::OUT_OF_SERVICE;
-    direction = Direction::DOWN;
-    floorRequests[0] = REQUESTED_UP;
-    closeDoors();
+    QTextStream(stdout) << "Elevator " << carNum << ": Has been informed of a fire" << endl;
+    voice("There is a fire!");
+    textMessage("There is a fire!");
+    emergencyRedirect();
 }
 
-void Elevator::ringBell() {
+void Elevator::handlePowerOut() {
+    QTextStream(stdout) << "Elevator " << carNum << ": Has been informed of a power outage" << endl;
+    voice("There is a power outage!");
+    textMessage("There is a power outage!");
+    emergencyRedirect();
+}
+
+void Elevator::emergencyRedirect(){
+    memset(floorRequests, 0, numFloors); //Cancel all destination floor requests on current elevator
+    outOfService = true;
+    if(currFloor == SAFE_FLOOR){
+        if(state == ElevatorState::IDLE || state == ElevatorState::WAITING){
+            voice("Please disembark since elevator is already on safe floor...");
+            textMessage("Please disembark since elevator is already on safe floor...");
+        } else {
+            stop(); //Stop elevator if it is moving but is at the safe floor
+        }
+    } else {
+        direction = Direction::DOWN;
+        destFloorRequest(SAFE_FLOOR);
+    }
+}
+
+void Elevator::ringBell() const {
     QTextStream(stdout) << "Elevator " << carNum << ": *Riiiiinnnnnngggg*" << endl;
 }
 

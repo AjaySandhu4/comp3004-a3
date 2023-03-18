@@ -22,8 +22,8 @@ void ElevatorCenteredStrategy::allocateElevator(int requestFloor, Direction requ
         Elevator* currElevator = cars->value(i);
         int currElevatorDistance = 2 * cars->length();
 
-        //If elevator is in middle of servicing the floor in the request direction, allocate the request to the servicing elevator...
-        if((currElevator->getDirection() == requestDirection) && (currElevator->getState() == ElevatorState::WAITING || currElevator->getState() == ElevatorState::IDLE)){
+        //If elevator is in middle of servicing the floor in the request direction or is idle at that floor, allocate the request to the servicing elevator...
+        if((currElevator->getCurrFloor() == requestFloor) && (currElevator->getState() == ElevatorState::IDLE || (currElevator->getDirection() == requestDirection && currElevator->getState() == ElevatorState::WAITING))){
             currElevator->destFloorRequest(requestFloor, requestDirection);
             return;
         }

@@ -180,7 +180,7 @@ void MainWindow::on_floorDownButton_clicked()
 void MainWindow::on_carNumComboBox_activated(int carNum)
 {
     if(carNum != elevatorOnUi->getCarNum()){
-        disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
+        disconnectElevatorFromUi();
         elevatorOnUi = elevators->value(carNum);
         setupElevatorInterface();
     }
@@ -192,8 +192,8 @@ void MainWindow::setupElevatorInterface()
     connect(elevatorOnUi, SIGNAL(reachedFloor(int)), ui->currFloorDisplay, SLOT(display(int)));
     ui->currFloorDisplay->display(elevatorOnUi->getCurrFloor());
 
-    connect(elevatorOnUi, SIGNAL(voice(const QString&)), this, SLOT(setTextDisplay(const QString&)));
-    connect(elevatorOnUi, SIGNAL(textMessage(const QString&)), this, SLOT(setAudioOutput(const QString&)));
+    connect(elevatorOnUi, SIGNAL(voice(const QString&)), this, SLOT(setAudioOutput(const QString&)));
+    connect(elevatorOnUi, SIGNAL(textMessage(const QString&)), this, SLOT(setTextDisplay(const QString&)));
 
     connect(elevatorOnUi, &Elevator::floorServiced, this, &MainWindow::setupElevatorInterface);
 
@@ -220,8 +220,6 @@ void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
 void MainWindow::disconnectElevatorFromUi() {
     disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
     disconnect(elevatorOnUi, nullptr, this, nullptr);
-    disconnect(elevatorOnUi, nullptr, ui->textDisplay, nullptr);
-    disconnect(elevatorOnUi, nullptr, ui->audioOutput, nullptr);
 }
 
 void MainWindow::initECS() {
@@ -241,7 +239,7 @@ void MainWindow::on_embarkButton_clicked()
     QTextStream(stdout) << "User has embarked elevator " << elevatorOnUi->getCarNum() << "..." << endl;
     elevatorOnUi->getWeightSensor()->addWeight(SIM_PASSENGER_WEIGHT);
     toggleWeightButtons();
-//    elevatorOnUi->
+    elevatorOnUi->getDoorLightSensor()->detects();
 }
 
 void MainWindow::on_disembarkButton_clicked()
@@ -249,11 +247,12 @@ void MainWindow::on_disembarkButton_clicked()
     QTextStream(stdout) << "User has disembarked elevator " << elevatorOnUi->getCarNum() << "..." << endl;
     elevatorOnUi->getWeightSensor()->reduceWeight(SIM_PASSENGER_WEIGHT); 
     toggleWeightButtons();
+    elevatorOnUi->getDoorLightSensor()->detects();
 }
 
 void MainWindow::on_elevatorFireAlarmButton_clicked()
 {
-//    elevatorOnUi->handleFire();
+    elevatorOnUi->handleFire();
     QTextStream(stdout) << "User has pulled fire alarm in elevator " << elevatorOnUi->getCarNum() << "!" << endl;
 }
 
@@ -274,12 +273,12 @@ void MainWindow::on_speakButton_clicked()
 
 void MainWindow::on_buildingFireButton_clicked()
 {
-//    ecs->handleFire()
+    ecs->handleFire();
 }
 
 void MainWindow::on_powerOutageButton_clicked()
 {
-//    ecs->handlePowerOut()
+    ecs->handlePowerOut();
 }
 
 void MainWindow::setTextDisplay(const QString& msg)

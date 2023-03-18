@@ -4,7 +4,6 @@
 enum class ElevatorState {
     MOVING,
     WAITING,
-    OUT_OF_SERVICE,
     IDLE
 };
 

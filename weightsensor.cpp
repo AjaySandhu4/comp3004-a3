@@ -1,6 +1,6 @@
 #include "weightsensor.h"
 
-const int WeightSensor::MAX_WEIGHT_TOLERANCE = 1000;
+const int WeightSensor::MAX_WEIGHT_TOLERANCE = 400; //Elevator can only tolerate 400kg before being overloaded
 
 WeightSensor::WeightSensor() : weight(0)
 { }

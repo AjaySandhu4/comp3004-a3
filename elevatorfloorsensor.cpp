@@ -1,6 +1,6 @@
 #include "elevatorfloorsensor.h"
 
-const int ElevatorFloorSensor::INTERVAL_BETWEEN_FLOORS = 4000;
+const int ElevatorFloorSensor::INTERVAL_BETWEEN_FLOORS = 3000;
 
 ElevatorFloorSensor::ElevatorFloorSensor() : nextFloor(-1)
 {

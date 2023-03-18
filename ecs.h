@@ -14,9 +14,16 @@ class ECS : public QObject
 public:
     ECS(AllocationStrategy* strategy, QVector<Floor*> *floors, QVector<Elevator*> *elevators);
 
+    void handleFire();
+    void handlePowerOut();
+
 public slots:
     void allocateElevator(int requestFloor, Direction requestDirection);
     void floorServiced(int floorNum, Direction direction);
+
+signals:
+    void fire();
+    void powerOut();
 
 private:
     QVector<Floor*> *floors;

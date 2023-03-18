@@ -33,7 +33,11 @@ public:
     Direction getDirection() const;
     bool isEmpty() const;
     WeightSensor* getWeightSensor() const;
+    DoorLightSensor* getDoorLightSensor() const;
     bool areDoorsOpen() const;
+    bool isOutOfService() const;
+
+
     void onOpenButtonPress();
     void onCloseButtonRelease();
 
@@ -43,6 +47,7 @@ public slots:
     void handleOverload();
     void handleDoorObstacle();
     void handleFire();
+    void handlePowerOut();
 
 private slots:
     void doorsHaveShut();
@@ -71,21 +76,21 @@ private:
     QTimer doorTimer; // Timer used to keep doors open to allow passengers to enter and exit
     QTimer closeDoorsTimer; // Timer used to keep track of when doors are in process of closing
     int consecutiveDoorInterruptions;
+    bool outOfService;
 
     const static int DOOR_TIMER_INTERVAL;
     const static int TIME_DOORS_TAKE_TO_SHUT;
     const static char REQUESTED_UP;
     const static char REQUESTED_DOWN;
+    const static int SAFE_FLOOR;
 
     void stop();
     void closeDoors();
     void openDoors();
     void decideDirectionToGo();
     bool areFloorRequestsEmpty() const;
-    void ringBell();
-
-//signals:
-
+    void ringBell() const;
+    void emergencyRedirect();
 };
 
 #endif // ELEVATOR_H
