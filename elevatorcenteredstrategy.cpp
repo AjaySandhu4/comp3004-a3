@@ -6,17 +6,9 @@ void ElevatorCenteredStrategy::allocateElevator(int requestFloor, Direction requ
     for(int i=0; i<cars->length(); ++i){
         if(cars->value(i)->isRequestedFloor(requestFloor, requestDirection)) return;
     }
-    
-//    //Check if there is an idle car and allocate the request to it if found...
-//    for(int i=0; i<cars->length(); ++i){
-//        if(cars->value(i)->getState() == ElevatorState::IDLE){
-//            cars->value(i)->destFloorRequest(requestFloor, requestDirection);
-//            return;
-//        }
-//    }
 
     //Otherwise, pick the closest car...
-    int closestDistance = 2 * cars->length(); //The distance can never be this big
+    int closestDistance = 2 * cars->length();
     Elevator* closestElevator = cars->value(0);
     for(int i=0; i<cars->length(); ++i){
         Elevator* currElevator = cars->value(i);

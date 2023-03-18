@@ -86,13 +86,15 @@ void MainWindow::clearFloors() {
     floors->clear();
 }
 
-void MainWindow::clearElevators() {
+void MainWindow::clearElevators()
+{
     for (int i=0; i<elevators->length(); ++i)
         delete elevators->value(i);
     elevators->clear();
 }
 
-void MainWindow::setupFloorButtons() {
+void MainWindow::setupFloorButtons()
+{
     if(floorOnUi->isTop()) ui->floorUpButton->setVisible(false);
     else ui->floorUpButton->setVisible(true);
 
@@ -199,9 +201,12 @@ void MainWindow::setupElevatorInterface()
 
     connect(elevatorOnUi, &Elevator::moving, this, &MainWindow::toggleWeightButtons);
     toggleWeightButtons();
+
+    ui->speakButton->setVisible(false);
 }
 
-void MainWindow::toggleWeightButtons() {
+void MainWindow::toggleWeightButtons()
+{
     // Weight buttons are only shown if the doors are open
     ui->embarkButton->setVisible(elevatorOnUi->areDoorsOpen());
     ui->disembarkButton->setVisible(elevatorOnUi->areDoorsOpen() && !elevatorOnUi->isEmpty()); //Only show disembark button if elevator is also not empty
@@ -217,12 +222,14 @@ void MainWindow::on_elevatorFloorRequestComboBox_activated(int floorNum)
 }
 
 //Disconnect elements of UI that are connected to current elevator on UI
-void MainWindow::disconnectElevatorFromUi() {
+void MainWindow::disconnectElevatorFromUi()
+{
     disconnect(elevatorOnUi, nullptr, ui->currFloorDisplay, nullptr);
     disconnect(elevatorOnUi, nullptr, this, nullptr);
 }
 
-void MainWindow::initECS() {
+void MainWindow::initECS()
+{
     bool isTimeDependentStrategy = ui->timeDependencyCheckBox->isChecked();
     currAllocationStrategy = isTimeDependentStrategy ? static_cast<AllocationStrategy*>(new TimeDependentStrategy()) : static_cast<AllocationStrategy*>(new ElevatorCenteredStrategy());
     ecs = new ECS(currAllocationStrategy, floors, elevators);

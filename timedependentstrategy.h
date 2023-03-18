@@ -1,9 +1,10 @@
 #ifndef TIMEDEPENDENTSTRATEGY_H
 #define TIMEDEPENDENTSTRATEGY_H
 
-#include "allocationstrategy.h"
+#include <QTime>
+#include "elevatorcenteredstrategy.h"
 
-class TimeDependentStrategy : public AllocationStrategy
+class TimeDependentStrategy : public ElevatorCenteredStrategy
 {
     Q_OBJECT
 public slots:
