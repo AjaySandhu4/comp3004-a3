@@ -40,6 +40,8 @@ public:
 
     void onOpenButtonPress();
     void onCloseButtonRelease();
+    void handleHelp();
+    void receiveMicInput();
 
 public slots:
     void destFloorRequest(int floorNum, Direction requestDirection = Direction::UNKNOWN);
@@ -58,9 +60,10 @@ signals:
     void moving(int startingFloor, Direction direction);
     void floorServiced(int floorNum, Direction direction);
     void reachedFloor(int floorNum);
-    void doorsClosing();
     void voice(const QString&);
     void textMessage(const QString&);
+    void callingForHelp(Elevator*);
+    void helpFollowUp();
 
 private:
     const int carNum;

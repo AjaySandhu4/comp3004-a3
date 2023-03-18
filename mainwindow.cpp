@@ -230,7 +230,8 @@ void MainWindow::initECS() {
 
 void MainWindow::on_helpButton_clicked()
 {
-//    elevatorOnUi->handleHelp();
+    QTextStream(stdout) << "User has pressed help button on elevator " << elevatorOnUi->getCarNum() << "!" << endl;
+    elevatorOnUi->handleHelp();
     ui->speakButton->setVisible(true);
 }
 
@@ -268,7 +269,10 @@ void MainWindow::on_closeDoorButton_released()
 
 void MainWindow::on_speakButton_clicked()
 {
-//    elevatorOnUi->receiveMicInput();
+    QTextStream(stdout) << "User has given follow up help response in elevator " << elevatorOnUi->getCarNum() << "..." << endl;
+    elevatorOnUi->receiveMicInput();
+    ui->speakButton->setVisible(false);
+
 }
 
 void MainWindow::on_buildingFireButton_clicked()

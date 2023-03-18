@@ -26,6 +26,7 @@ SOURCES += \
     floor.cpp \
     main.cpp \
     mainwindow.cpp \
+    safetyservice.cpp \
     timedependentstrategy.cpp \
     weightsensor.cpp
 
@@ -40,6 +41,7 @@ HEADERS += \
     elevatorstate.h \
     floor.h \
     mainwindow.h \
+    safetyservice.h \
     timedependentstrategy.h \
     weightsensor.h
 

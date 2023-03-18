@@ -263,3 +263,12 @@ void Elevator::onCloseButtonRelease() {
         QTextStream(stdout) << "Elevator " << carNum << ": Close button pressed, but doors cannot be forced closed at this time..." << endl;
     }
 }
+
+void Elevator::handleHelp() {
+    emit callingForHelp(this);
+}
+
+void Elevator::receiveMicInput() {
+    emit helpFollowUp();
+}
+
