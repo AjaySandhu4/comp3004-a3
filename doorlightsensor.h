@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+// Purpose of class: Used to interrupt Elevator during its closing sequence
 class DoorLightSensor : public QObject
 {
     Q_OBJECT
@@ -15,7 +16,7 @@ signals:
     void triggered();
 
 private:
-    bool active;
+    bool active; //If active, the triggered() signal can be sent...
 
 };
 

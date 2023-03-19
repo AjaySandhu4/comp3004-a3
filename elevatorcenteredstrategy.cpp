@@ -47,8 +47,3 @@ void ElevatorCenteredStrategy::allocateElevator(int requestFloor, Direction requ
     //Allocate the request to the elevator determined to be the closest
     closestElevator->destFloorRequest(requestFloor, requestDirection);
 }
-
-void ElevatorCenteredStrategy::rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors)
-{
-
-}

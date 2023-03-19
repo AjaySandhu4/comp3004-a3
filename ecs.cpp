@@ -1,6 +1,6 @@
 #include "ecs.h"
 
-const int ECS::MAX_HELP_RESPONSE_TIME = 5000;
+const int ECS::MAX_HELP_RESPONSE_TIME = 5000; //Max is 5 seconds before 911 is called in a signal for help situation
 
 ECS::ECS(AllocationStrategy* strategy, QVector<Floor*> *floors, QVector<Elevator*> *elevators)
     : floors(floors)
@@ -53,7 +53,7 @@ void ECS::handleHelp(Elevator* car)
     safetyService->connectWithCar(carGettingHelp);
     connect(safetyService, &SafetyService::responded, this, &ECS::receiveSafetyResponse);
     connect(carGettingHelp, &Elevator::helpFollowUp, this, &ECS::receiveHelpResponse);
-    QTimer::singleShot(MAX_HELP_RESPONSE_TIME, this, &ECS::onHelpTimerTimeout);
+    QTimer::singleShot(MAX_HELP_RESPONSE_TIME, this, &ECS::onHelpTimerTimeout); //Begin timer to make sure responses are in time
 }
 
 void ECS::onHelpTimerTimeout()

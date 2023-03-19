@@ -2,8 +2,8 @@
 
 const int Elevator::DOOR_TIMER_INTERVAL = 8000; //Takes 8 seconds for elevator to try and close its doors
 const int Elevator::TIME_DOORS_TAKE_TO_SHUT = 2500; //Takes 2.5 seconds from elevator telling doors to close to them actually being shut
-const char Elevator::REQUESTED_UP = 0b10; //Bitmask that represents that a floor request exists in the UP direction
-const char Elevator::REQUESTED_DOWN = 0b01; //Bitmask that represents that a floor request exists in the DOWN direction
+const char Elevator::REQUESTED_UP = 0b10;
+const char Elevator::REQUESTED_DOWN = 0b01;
 const int Elevator::SAFE_FLOOR = 0; //Safe floor designated as floor 0
 
 Elevator::Elevator(int carNum, int numFloors)
@@ -21,11 +21,8 @@ Elevator::Elevator(int carNum, int numFloors)
 {
     connect(this, &Elevator::moving, &floorSensor, &ElevatorFloorSensor::detectMovement);
     connect(&floorSensor, &ElevatorFloorSensor::detectedFloor, this, &Elevator::newFloor);
-
     connect(weightSensor, &WeightSensor::overload, this, &Elevator::handleOverload);
-
     connect(doorLightSensor, &DoorLightSensor::triggered, this, &Elevator::handleDoorObstacle);
-
     connect(&doorTimer, &QTimer::timeout, this, &Elevator::doorTimerFinished);
     connect(&closeDoorsTimer, &QTimer::timeout, this, &Elevator::doorsHaveShut);
 
@@ -38,12 +35,7 @@ Elevator::~Elevator()
     delete[] floorRequests;
 }
 
-bool Elevator::isRequestedFloor(int floorNum, Direction requestDirection) const {
-    if(requestDirection == Direction::UP) return floorRequests[floorNum] & REQUESTED_UP;
-    if(requestDirection == Direction::DOWN) return floorRequests[floorNum] & REQUESTED_DOWN;
-    return floorRequests[floorNum];
-}
-
+//getters
 int Elevator::getCurrFloor() const { return currFloor; }
 int Elevator::getCarNum() const { return carNum; }
 ElevatorState Elevator::getState() const { return state; }
@@ -54,6 +46,12 @@ bool Elevator::areDoorsOpen() const { return doorsOpen; }
 bool Elevator::isEmpty() const { return !weightSensor->isLoaded(); }
 bool Elevator::isOutOfService() const { return outOfService; }
 
+bool Elevator::isRequestedFloor(int floorNum, Direction requestDirection) const {
+    if(requestDirection == Direction::UP) return floorRequests[floorNum] & REQUESTED_UP;
+    if(requestDirection == Direction::DOWN) return floorRequests[floorNum] & REQUESTED_DOWN;
+    return floorRequests[floorNum];
+}
+
 bool Elevator::areFloorRequestsEmpty() const {
     for(int i=0; i<numFloors; ++i){
         if(isRequestedFloor(i)) return false;
@@ -63,10 +61,13 @@ bool Elevator::areFloorRequestsEmpty() const {
 
 void Elevator::destFloorRequest(int requestFloor, Direction requestDirection)
 {
-    if(requestFloor == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){ //Already in middle of servicing requested floor
+    //Already in middle of servicing requested floor so immediately signal that it is serviced
+    if(requestFloor == currFloor && (state == ElevatorState::WAITING || state == ElevatorState::IDLE)){
         emit floorServiced(currFloor, requestDirection);
         return;
     }
+
+    //Choose direction to make the request if request direction is UNKNOWN
     if(requestDirection == Direction::UNKNOWN){
         if(requestFloor == numFloors-1){
             requestDirection = Direction::DOWN;
@@ -78,6 +79,7 @@ void Elevator::destFloorRequest(int requestFloor, Direction requestDirection)
             requestDirection = requestFloor - currFloor < 0 ? Direction::DOWN : Direction::UP;
         }
     }
+
     //Add the floor request
     if(requestDirection == Direction::UP) floorRequests[requestFloor] = floorRequests[requestFloor] | REQUESTED_UP;
     if(requestDirection == Direction::DOWN) floorRequests[requestFloor] = floorRequests[requestFloor] | REQUESTED_DOWN;
@@ -269,6 +271,6 @@ void Elevator::handleHelp() {
 }
 
 void Elevator::receiveMicInput() {
-    emit helpFollowUp();
+    emit helpFollowUp(); //If mic input was received emit that the help call was followed up
 }
 

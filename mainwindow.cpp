@@ -95,15 +95,17 @@ void MainWindow::clearElevators()
 
 void MainWindow::setupFloorButtons()
 {
+    //Top floor has no UP button
     if(floorOnUi->isTop()) ui->floorUpButton->setVisible(false);
     else ui->floorUpButton->setVisible(true);
 
+    //Ground floor has no DOWN button
     if(floorOnUi->getLevel() == Floor::GROUND_LEVEL) ui->floorDownButton->setVisible(false);
     else ui->floorDownButton->setVisible(true);
 
+    //Illuminate UP or DOWN buttons if they have been pressed
     if(floorOnUi->isWaitingUp()) ui->floorUpButton->setStyleSheet("background-color: yellow");
     else ui->floorUpButton->setStyleSheet("");
-
     if(floorOnUi->isWaitingDown()) ui->floorDownButton->setStyleSheet("background-color: yellow");
     else ui->floorDownButton->setStyleSheet("");
 }
@@ -147,6 +149,8 @@ void MainWindow::on_resetSimulationButton_clicked()
 
     //Show the simulation initialization menu again
     ui->initFrame->setVisible(true);
+
+    QTextStream(stdout) << "Simulation has been reset" << endl;
 }
 
 void MainWindow::on_floorNumComboBox_activated(int floorNum)
@@ -181,6 +185,7 @@ void MainWindow::on_floorDownButton_clicked()
 
 void MainWindow::on_carNumComboBox_activated(int carNum)
 {
+    //If its a different car that was selected, update the UI
     if(carNum != elevatorOnUi->getCarNum()){
         disconnectElevatorFromUi();
         elevatorOnUi = elevators->value(carNum);
@@ -294,12 +299,14 @@ void MainWindow::on_powerOutageButton_clicked()
 
 void MainWindow::setTextDisplay(const QString& msg)
 {
+    //Text Display displays message for 5 seconds
     ui->textDisplay->setText(msg);
     QTimer::singleShot(5000, ui->textDisplay, &QTextBrowser::clear);
 }
 
 void MainWindow::setAudioOutput(const QString& msg)
 {
+    //Audio Output displays message for 5 seconds
     ui->audioOutput->setText(msg);
     QTimer::singleShot(5000, ui->audioOutput, &QTextBrowser::clear);
 }

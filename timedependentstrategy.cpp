@@ -62,8 +62,3 @@ void TimeDependentStrategy::allocateElevator(int requestFloor, Direction request
 
 
 }
-
-void TimeDependentStrategy::rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors)
-{
-
-}

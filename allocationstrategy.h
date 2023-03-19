@@ -8,6 +8,7 @@
 #include <direction.h>
 #include <elevatorstate.h>
 
+// Purpose of class: Interface for letting the allocation strategy become an attribute to make use of strategy design pattern
 class AllocationStrategy : public QObject
 {
     Q_OBJECT
@@ -15,9 +16,8 @@ public:
     virtual ~AllocationStrategy();
 
 public slots:
+    //Method used to allocate request from a floor to an elevator
     virtual void allocateElevator(int requestFloor, Direction requestDirection, QVector<Elevator*> *cars, int totalFloors) = 0;
-    virtual void rerouteElevatorRequests(Elevator* elevator, QVector<Elevator*> *cars, QVector<Floor*> *floors) = 0;
-
 };
 
 #endif // ALLOCATIONSTRATEGY_H

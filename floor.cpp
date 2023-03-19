@@ -9,6 +9,7 @@ Floor::Floor(int level, bool top)
     , waitingDown(false)
 { }
 
+//getters
 int Floor::getLevel() const { return level; }
 bool Floor::isTop() const { return top; }
 bool Floor::isWaitingUp() const { return waitingUp; }
